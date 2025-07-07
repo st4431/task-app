@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Controller
@@ -29,24 +29,24 @@ public class TaskController {
     }
 
     @GetMapping("/display")
-    public String displayTasks(Model model) {
-        List<Task> taskList = taskService.displayTasks();
+    public String findAllTasks(Model model) {
+        List<Task> taskList = taskService.findAllTasks();
         model.addAttribute("tasks", taskList);
         return "display-tasks";
     }
 
     @GetMapping("/register")
     public String registerNewTask(Model model) {
-        model.addAttribute("taskInputDto", new TaskInputDto());
+        model.addAttribute("newTask", new TaskInputDto());
         return "input-task";
     }
 
     @PostMapping("/register")
-    public String registerNewTask(@Validated @ModelAttribute("taskInputDto") TaskInputDto taskInputDto, BindingResult bindingResult) {
+    public String registerNewTask(@Validated @ModelAttribute("newTask") TaskInputDto newTask, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "input-task";
         }
-        taskService.registerNewTask(taskMapper.toTask(taskInputDto));
+        taskService.registerNewTask(taskMapper.toTask(newTask));
         return "redirect:/tasks/display";
     }
 }
