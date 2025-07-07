@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>タスク新規登録</h1>
+<p th:text="${message}"></p>
+<form action="/tasks/register" method="post" th:object="${taskInputDto}">
+    <div>
+        <label for="title">タイトル</label>
+        <input type="text" id="title" name="title"/>
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></span>
+    </div>
+    <div>
+        <label for="description">内容</label>
+        <textarea id="description" name="description"/>
+    </div>
+    <div>
+        <label for="taskStatusEnum">進捗状況</label>
+        <select id="taskStatusEnum" name="taskStatusEnum" th:field="*{taskStatusEnum}">
+            <option th:each="taskStatusEnum : ${T(com.takahata.task_app.entity.Task_StatusEnum).values()}"
+                    th:value="${taskStatusEnum}"
+                    th:text="${taskStatusEnum.name()}"></option>
+        </select>
+        <span th:if="${#fields.hasErrors('taskStatusEnum')}" th:errors="*{taskStatusEnum}" style="color:red;"></span>
+    </div>
+    <div>
+        <label for="dueDate">〆切</label>
+        <input type="date" id="dueDate" name="dueDate"/>
+        <span th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}" style="color:red;"></span>
+    </div>
+    <button type="submit">登録</button>
+</form>
+<br>
+<a th:href="@{/hello}">Homeへ戻る</a>
+</body>
+</html>
