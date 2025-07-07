@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:text-align="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>タスク一覧</title>
 </head>
 <body>
 <h1>タスク一覧</h1>
+
 <table>
     <thead>
     <tr>
@@ -13,8 +14,8 @@
         <th>内容</th>
         <th>進捗状況</th>
         <th>〆切</th>
-        <th>作成時刻</th>
-        <th>更新時刻</th>
+        <th>作成日時</th>
+        <th>更新日時</th>
     </tr>
     </thead>
     <tbody>
@@ -31,5 +32,9 @@
     </tr>
     </tbody>
 </table>
+
+<br>
+<a th:href="@{/hello}">Homeへ戻る</a>
+
 </body>
 </html>

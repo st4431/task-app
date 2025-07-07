@@ -5,6 +5,8 @@ import com.takahata.task_app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TaskService {
     @Autowired
@@ -14,6 +16,9 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
+    public List<Task> displayTasks() {
+        return taskRepository.displayTasks();
+    }
     public void registerNewTask(Task task) {
         taskRepository.registerNewTask(task);
     }

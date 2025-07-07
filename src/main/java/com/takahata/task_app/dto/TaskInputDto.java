@@ -1,20 +1,20 @@
 package com.takahata.task_app.dto;
 
 import com.takahata.task_app.entity.Task_StatusEnum;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
+@Data
 public class TaskInputDto {
-    @NotNull
-    @Getter
+    @NotEmpty
     private String title;
-    @Getter
     private String description;
-    @Getter
     private Task_StatusEnum taskStatusEnum;
-    @Getter
-    private Date dueDate;
+    private LocalDate dueDate;
 }
 
