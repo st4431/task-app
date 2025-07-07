@@ -11,7 +11,7 @@ public class TaskInputDto {
     @NotEmpty
     private String title;
     private String description;
-    private TaskStatus taskStatusEnum;
+    private TaskStatus taskStatus;
     private LocalDate dueDate;
 }
 

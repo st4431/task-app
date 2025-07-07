@@ -10,7 +10,7 @@ public class TaskMapper {
         Task task = new Task();
         task.setTitle(taskInputDto.getTitle());
         task.setDescription(taskInputDto.getDescription());
-        task.setTaskStatusEnum(taskInputDto.getTaskStatusEnum());
+        task.setTaskStatus(taskInputDto.getTaskStatus());
         task.setDueDate(taskInputDto.getDueDate());
         return task;
     }

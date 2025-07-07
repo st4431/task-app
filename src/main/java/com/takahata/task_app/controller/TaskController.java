@@ -9,10 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,6 +44,12 @@ public class TaskController {
             return "input-task";
         }
         taskService.registerNewTask(taskMapper.toTask(newTask));
+        return "redirect:/tasks/display";
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteTask(@PathVariable(name = "id") int id) {
+        taskService.deleteTask(id);
         return "redirect:/tasks/display";
     }
 }

@@ -17,7 +17,7 @@ public class TaskRepository {
         task.setId(rs.getInt("id"));
         task.setTitle(rs.getString("title"));
         task.setDescription(rs.getString("description"));
-        task.setTaskStatusEnum(TaskStatus.valueOf(rs.getString("task_status")));
+        task.setTaskStatus(TaskStatus.valueOf(rs.getString("task_status")));
         if (rs.getDate("due_date") != null) {
             task.setDueDate(rs.getDate("due_date").toLocalDate());
         }
@@ -31,15 +31,21 @@ public class TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     public List<Task> findAllTasks() {
         return jdbcTemplate.query("""
                 SELECT * FROM task;""", taskRowMapper);
     }
+
     public void registerNewTask(Task task) {
         jdbcTemplate.update("""
                 INSERT INTO task(title, description, task_status, due_date)
-                VALUES(?, ?, ?, ?)""",
-                task.getTitle(), task.getDescription(), task.getTaskStatusEnum().name(), task.getDueDate());
+                VALUES(?, ?, ?, ?);""",
+                task.getTitle(), task.getDescription(), task.getTaskStatus().name(), task.getDueDate());
+    }
+
+    public void deleteTask(int id) {
+        jdbcTemplate.update("""
+                DELETE FROM task WHERE id = ?;""",
+                id);
     }
 }
