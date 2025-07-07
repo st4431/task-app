@@ -16,8 +16,8 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> displayTasks() {
-        return taskRepository.displayTasks();
+    public List<Task> findAllTasks() {
+        return taskRepository.findAllTasks();
     }
     public void registerNewTask(Task task) {
         taskRepository.registerNewTask(task);

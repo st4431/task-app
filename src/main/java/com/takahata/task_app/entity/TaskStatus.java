@@ -1,6 +1,6 @@
 package com.takahata.task_app.entity;
 
-public enum Task_StatusEnum {
+public enum TaskStatus {
     NOT_STARTED,
     IN_PROGRESS,
     COMPLETED

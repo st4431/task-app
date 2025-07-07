@@ -6,7 +6,7 @@
 <body>
 <h1>タスク新規登録</h1>
 <p th:text="${message}"></p>
-<form action="/tasks/register" method="post" th:object="${taskInputDto}">
+<form action="/tasks/register" method="post" th:object="${newTask}">
     <div>
         <label for="title">タイトル</label>
         <input type="text" id="title" name="title"/>
