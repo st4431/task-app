@@ -25,10 +25,12 @@
     <tr th:each="task : ${tasks}">
         <td th:text="${task.title}" style="text-align: left;"></td>
         <td th:text="${task.description}" style="text-align: left;"></td>
-        <td th:text="${task.taskStatusEnum}" style="text-align: left;"></td>
+        <td th:text="${task.taskStatus}" style="text-align: left;"></td>
         <td th:text="${task.dueDate}" style="text-align: left;"></td>
         <td th:text="${task.createdAt}" style="text-align: left;"></td>
         <td th:text="${task.updatedAt}" style="text-align: left;"></td>
+        <td style="text-align: center;">
+            <a th:href="@{/tasks/delete(id=${task.id})}">削除</a></td>
     </tr>
     </tbody>
 </table>

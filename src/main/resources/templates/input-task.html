@@ -17,11 +17,11 @@
         <textarea id="description" name="description"/></textarea>
     </div>
     <div>
-        <label for="taskStatusEnum">進捗状況</label>
-        <select id="taskStatusEnum" name="taskStatusEnum" th:field="*{taskStatusEnum}">
-            <option th:each="taskStatusEnum : ${T(com.takahata.task_app.entity.Task_StatusEnum).values()}"
-                    th:value="${taskStatusEnum}"
-                    th:text="${taskStatusEnum.name()}"></option>
+        <label for="taskStatus">進捗状況</label>
+        <select id="taskStatus" name="taskStatus" th:field="*{taskStatus}">
+            <option th:each="taskStatus : ${T(com.takahata.task_app.entity.TaskStatus).values()}"
+                    th:value="${taskStatus}"
+                    th:text="${taskStatus.name()}"></option>
         </select>
         <span th:if="${#fields.hasErrors('taskStatusEnum')}" th:errors="*{taskStatusEnum}" style="color:red;"></span>
     </div>
