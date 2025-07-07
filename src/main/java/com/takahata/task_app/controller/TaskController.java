@@ -30,7 +30,7 @@ public class TaskController {
 
     @GetMapping("/display")
     public String displayTasks(Model model) {
-        List<Task> taskList = new ArrayList<>();
+        List<Task> taskList = taskService.displayTasks();
         model.addAttribute("tasks", taskList);
         return "display-tasks";
     }
