@@ -47,9 +47,11 @@ public class TaskController {
         return "redirect:/tasks/display";
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteTask(@PathVariable(name = "id") int id) {
         taskService.deleteTask(id);
         return "redirect:/tasks/display";
     }
+
+
 }

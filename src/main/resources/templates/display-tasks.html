@@ -20,7 +20,7 @@
     </thead>
     <tbody>
     <tr th:if="${tasks.isEmpty()}">
-        <td colspan="6"> データなし</td>
+        <td colspan="7"> データなし</td>
     </tr>
     <tr th:each="task : ${tasks}">
         <td th:text="${task.title}" style="text-align: left;"></td>
@@ -30,7 +30,9 @@
         <td th:text="${task.createdAt}" style="text-align: left;"></td>
         <td th:text="${task.updatedAt}" style="text-align: left;"></td>
         <td style="text-align: center;">
-            <a th:href="@{/tasks/delete(id=${task.id})}">削除</a></td>
+            <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post">
+                <button type="submit">削除</button>
+            </form>
     </tr>
     </tbody>
 </table>
