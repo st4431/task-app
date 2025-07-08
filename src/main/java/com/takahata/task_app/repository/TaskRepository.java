@@ -39,7 +39,11 @@ public class TaskRepository {
 
     public void registerNewTask(Task task) {
         jdbcTemplate.update("""
-                INSERT INTO task(title, description, task_status, due_date)
+                INSERT INTO task (
+                title,
+                description,
+                task_status,
+                due_date)
                 VALUES(?, ?, ?, ?);""",
                 task.getTitle(),
                 task.getDescription(),
@@ -49,19 +53,32 @@ public class TaskRepository {
 
     public void deleteTask(int id) {
         jdbcTemplate.update("""
-                DELETE FROM task WHERE id = ?;""",
+                DELETE FROM task
+                WHERE id = ?;""",
                 id);
     }
 
     public Task findTaskById(int id) {
         return jdbcTemplate.queryForObject("""
-                SELECT FROM task WHERE id = ?""",
+                SELECT FROM task
+                WHERE id = ?;""",
                 taskRowMapper,
                 id);
     }
 
     public void uploadTask(Task newTask) {
         jdbcTemplate.update("""
-                UPDATE """)
+                UPDATE task
+                SET 
+                title = ?,
+                description = ?,
+                task_status = ?,
+                due_date = ?,
+                WHERE id = ?;""",
+                newTask.getTitle(),
+                newTask.getDescription(),
+                newTask.getTaskStatus(),
+                newTask.getDueDate(),
+                newTask.getId());
     }
 }
