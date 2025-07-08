@@ -17,12 +17,11 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
-    private final TaskMapper taskMapper;
+
 
     @Autowired
-    public TaskController(TaskService taskService, TaskMapper taskMapper) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
-        this.taskMapper = taskMapper;
     }
 
     @GetMapping("/display")
@@ -43,7 +42,7 @@ public class TaskController {
         if (bindingResult.hasErrors()) {
             return "input-task";
         }
-        taskService.registerNewTask(taskMapper.toTask(newTask));
+        taskService.registerNewTask(newTask);
         return "redirect:/tasks/display";
     }
 
@@ -51,6 +50,14 @@ public class TaskController {
     public String deleteTask(@PathVariable(name = "id") int id) {
         taskService.deleteTask(id);
         return "redirect:/tasks/display";
+    }
+
+    @GetMapping("/update/{id}")
+    public String updateTask(Model model, @PathVariable(name = "id") int id) {
+        Task foundTask = taskService.findTaskById(id);
+        model.addAttribute("foundTask", foundTask);
+
+        return "update-task";
     }
 
 

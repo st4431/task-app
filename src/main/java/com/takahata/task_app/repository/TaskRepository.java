@@ -33,19 +33,35 @@ public class TaskRepository {
 
     public List<Task> findAllTasks() {
         return jdbcTemplate.query("""
-                SELECT * FROM task;""", taskRowMapper);
+                SELECT * FROM task;""",
+                taskRowMapper);
     }
 
     public void registerNewTask(Task task) {
         jdbcTemplate.update("""
                 INSERT INTO task(title, description, task_status, due_date)
                 VALUES(?, ?, ?, ?);""",
-                task.getTitle(), task.getDescription(), task.getTaskStatus().name(), task.getDueDate());
+                task.getTitle(),
+                task.getDescription(),
+                task.getTaskStatus().name(),
+                task.getDueDate());
     }
 
     public void deleteTask(int id) {
         jdbcTemplate.update("""
                 DELETE FROM task WHERE id = ?;""",
                 id);
+    }
+
+    public Task findTaskById(int id) {
+        return jdbcTemplate.queryForObject("""
+                SELECT FROM task WHERE id = ?""",
+                taskRowMapper,
+                id);
+    }
+
+    public void uploadTask(Task newTask) {
+        jdbcTemplate.update("""
+                UPDATE """)
     }
 }
