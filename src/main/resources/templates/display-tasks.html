@@ -33,6 +33,9 @@
             <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post">
                 <button type="submit">削除</button>
             </form>
+            <form th:action="@{/tasks/update/{id}(id=${task.id})}" method="post">
+                <button type="submit">更新</button>
+            </form>
     </tr>
     </tbody>
 </table>

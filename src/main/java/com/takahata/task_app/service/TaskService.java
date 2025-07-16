@@ -23,6 +23,7 @@ public class TaskService {
     public List<Task> findAllTasks() {
         return taskRepository.findAllTasks();
     }
+
     public void registerNewTask(TaskInputDto newTask) {
         taskRepository.registerNewTask(taskMapper.toTask(newTask));
     }
@@ -33,6 +34,10 @@ public class TaskService {
 
     public Task findTaskById(int id) {
         return taskRepository.findTaskById(id);
+    }
+
+    public void updateTask(TaskInputDto updatedTask) {
+        taskRepository.updateTask(taskMapper.toTask(updatedTask));
     }
 
 
