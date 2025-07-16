@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Data
 public class TaskInputDto {
+    private int id;
     @NotEmpty
     private String title;
     private String description;

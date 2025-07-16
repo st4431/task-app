@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
 </head>
 <body>
-
+<h1>タスク更新</h1>
+<p th:text="${message}"></p>
+<form action="/tasks/update" method="post" th:object="${updatedTask}">
+    <div>
+        <input type="hidden" th:field="*{id}" /></td>
+    </div>
+    <div>
+        <label for="title">タイトル</label>
+        <input type="text" id="title" th:field="*{title}" />
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></span>
+    </div>
+    <div>
+        <label for="description">内容</label>
+        <textarea id="description" th:field="*{description}"/></textarea>
+    </div>
+    <div>
+        <label for="taskStatus">進捗状況</label>
+        <select id="taskStatus" th:field="*{taskStatus}">
+            <option th:each="taskStatus : ${T(com.takahata.task_app.entity.TaskStatus).values()}"
+                    th:value="${taskStatus}"
+                    th:text="${taskStatus.name()}"></option>
+        </select>
+    </div>
+    <div>
+        <label for="dueDate">〆切</label>
+        <input type="date" id="dueDate" th:field="*{dueDate}"/>
+    </div>
+    <button type="submit">登録</button>
+</form>
+<br>
+<a th:href="@{/hello}">Homeへ戻る</a>
 </body>
 </html>

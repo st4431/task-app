@@ -66,19 +66,19 @@ public class TaskRepository {
                 id);
     }
 
-    public void uploadTask(Task newTask) {
+    public void updateTask(Task updatedTask) {
         jdbcTemplate.update("""
                 UPDATE task
-                SET 
+                SET
                 title = ?,
                 description = ?,
                 task_status = ?,
                 due_date = ?,
                 WHERE id = ?;""",
-                newTask.getTitle(),
-                newTask.getDescription(),
-                newTask.getTaskStatus(),
-                newTask.getDueDate(),
-                newTask.getId());
+                updatedTask.getTitle(),
+                updatedTask.getDescription(),
+                updatedTask.getTaskStatus(),
+                updatedTask.getDueDate(),
+                updatedTask.getId());
     }
 }

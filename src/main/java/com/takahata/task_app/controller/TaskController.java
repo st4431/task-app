@@ -54,10 +54,18 @@ public class TaskController {
 
     @GetMapping("/update/{id}")
     public String updateTask(Model model, @PathVariable(name = "id") int id) {
-        Task foundTask = taskService.findTaskById(id);
-        model.addAttribute("foundTask", foundTask);
-
+        Task updatedTask = taskService.findTaskById(id);
+        model.addAttribute("updatedTask", updatedTask);
         return "update-task";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateTask(@Validated @ModelAttribute("updatedTask") TaskInputDto updatedTask, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "update-task";
+        }
+        taskService.updateTask(updatedTask);
+        return "redirect:/tasks/display";
     }
 
 
