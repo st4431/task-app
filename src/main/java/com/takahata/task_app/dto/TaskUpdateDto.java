@@ -7,11 +7,13 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class TaskInputDto {
+public class
+TaskUpdateDto {
+    private int id;
     @NotEmpty
     private String title;
     private String description;
     private TaskStatus taskStatus;
     private LocalDate dueDate;
-}
 
+}

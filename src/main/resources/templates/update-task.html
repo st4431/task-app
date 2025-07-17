@@ -6,7 +6,7 @@
 <body>
 <h1>タスク更新</h1>
 <p th:text="${message}"></p>
-<form action="/tasks/update" method="post" th:object="${updatedTask}">
+<form th:action="@{/tasks/update/{id}(id=*{id})}" method="post" th:object="${taskUpdateDto}">
     <div>
         <input type="hidden" th:field="*{id}" /></td>
     </div>
@@ -31,7 +31,7 @@
         <label for="dueDate">〆切</label>
         <input type="date" id="dueDate" th:field="*{dueDate}"/>
     </div>
-    <button type="submit">登録</button>
+    <button type="submit">更新</button>
 </form>
 <br>
 <a th:href="@{/hello}">Homeへ戻る</a>
