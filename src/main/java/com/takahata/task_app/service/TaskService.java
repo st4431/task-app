@@ -2,6 +2,7 @@ package com.takahata.task_app.service;
 
 import com.takahata.task_app.config.TaskMapper;
 import com.takahata.task_app.dto.TaskInputDto;
+import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +26,19 @@ public class TaskService {
     }
 
     public void registerNewTask(TaskInputDto newTask) {
-        taskRepository.registerNewTask(taskMapper.toTask(newTask));
+        taskRepository.registerNewTask(taskMapper.fromInputDtoToTask(newTask));
     }
 
     public void deleteTask(int id) {
         taskRepository.deleteTask(id);
     }
 
-    public Task findTaskById(int id) {
-        return taskRepository.findTaskById(id);
+    public TaskUpdateDto findTaskUpdateDtoById(int id) {
+        return taskMapper.toTaskUpdateDto(taskRepository.findTaskById(id));
     }
 
-    public void updateTask(TaskInputDto updatedTask) {
-        taskRepository.updateTask(taskMapper.toTask(updatedTask));
+    public void updateTask(TaskUpdateDto taskUpdateDto) {
+        taskRepository.updateTask(taskMapper.fromUpdateDtoToTask(taskUpdateDto));
     }
 
 

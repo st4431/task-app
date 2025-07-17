@@ -2,6 +2,7 @@ package com.takahata.task_app.controller;
 
 import com.takahata.task_app.config.TaskMapper;
 import com.takahata.task_app.dto.TaskInputDto;
+import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,17 +55,17 @@ public class TaskController {
 
     @GetMapping("/update/{id}")
     public String updateTask(Model model, @PathVariable(name = "id") int id) {
-        Task updatedTask = taskService.findTaskById(id);
-        model.addAttribute("updatedTask", updatedTask);
+        TaskUpdateDto taskUpdateDto = taskService.findTaskUpdateDtoById(id);
+        model.addAttribute("taskUpdateDto", taskUpdateDto);
         return "update-task";
     }
 
     @PostMapping("/update/{id}")
-    public String updateTask(@Validated @ModelAttribute("updatedTask") TaskInputDto updatedTask, BindingResult bindingResult) {
+    public String updateTask(@Validated @ModelAttribute("taskUpdateDto") TaskUpdateDto taskUpdateDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "update-task";
         }
-        taskService.updateTask(updatedTask);
+        taskService.updateTask(taskUpdateDto);
         return "redirect:/tasks/display";
     }
 

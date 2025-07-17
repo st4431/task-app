@@ -60,7 +60,7 @@ public class TaskRepository {
 
     public Task findTaskById(int id) {
         return jdbcTemplate.queryForObject("""
-                SELECT FROM task
+                SELECT * FROM task
                 WHERE id = ?;""",
                 taskRowMapper,
                 id);
@@ -73,11 +73,11 @@ public class TaskRepository {
                 title = ?,
                 description = ?,
                 task_status = ?,
-                due_date = ?,
+                due_date = ?
                 WHERE id = ?;""",
                 updatedTask.getTitle(),
                 updatedTask.getDescription(),
-                updatedTask.getTaskStatus(),
+                updatedTask.getTaskStatus().name(),
                 updatedTask.getDueDate(),
                 updatedTask.getId());
     }
