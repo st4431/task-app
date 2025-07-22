@@ -4,6 +4,7 @@ import com.takahata.task_app.config.TaskMapper;
 import com.takahata.task_app.dto.TaskInputDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
+import com.takahata.task_app.exception.TaskNotFoundException;
 import com.takahata.task_app.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,11 @@ public class TaskService {
         taskRepository.deleteTask(id);
     }
 
+    //もし中身が空だったら例外を投げておく。
     public TaskUpdateDto findTaskUpdateDtoById(int id) {
-        return taskMapper.toTaskUpdateDto(taskRepository.findTaskById(id));
+        Task task = taskRepository.findTaskById(id)
+                .orElseThrow(() -> new TaskNotFoundException("ID:" + id + "のタスクが見つかりません。"));
+        return taskMapper.toTaskUpdateDto(task);
     }
 
     public void updateTask(TaskUpdateDto taskUpdateDto) {

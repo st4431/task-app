@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -55,12 +56,15 @@ public class TaskRepository {
                 id);
     }
 
-    public Task findTaskById(int id) {
-        return jdbcTemplate.queryForObject("""
+    //Optional型で返すことで、中身が空の可能性を明示する
+    //Optional型が「空の可能性を持つこと」はエンジニアの間の共通認識のようなもの
+    public Optional<Task> findTaskById(int id) {
+        List<Task> taskList = jdbcTemplate.query("""
                 SELECT * FROM task
                 WHERE id = ?;""",
                 taskRowMapper,
                 id);
+        return taskList.stream().findFirst();
     }
 
     public void updateTask(Task updatedTask) {
