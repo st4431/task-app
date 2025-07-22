@@ -44,9 +44,6 @@ public class TaskService {
     }
 
     public void updateTask(TaskUpdateDto taskUpdateDto) {
-        //更新日時の更新
-        Task updatedTask = taskMapper.fromUpdateDtoToTask(taskUpdateDto);
-        updatedTask.setUpdatedAt(LocalDateTime.now());
-        taskRepository.updateTask(updatedTask);
+        taskRepository.updateTask(taskMapper.fromUpdateDtoToTask(taskUpdateDto));
     }
 }

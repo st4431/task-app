@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,6 +68,7 @@ public class TaskRepository {
         return taskList.stream().findFirst();
     }
 
+    //更新日時もここでセットする。
     public void updateTask(Task updatedTask) {
         jdbcTemplate.update("""
                 UPDATE task
@@ -74,12 +76,14 @@ public class TaskRepository {
                 title = ?,
                 description = ?,
                 task_status = ?,
-                due_date = ?
+                due_date = ?,
+                updated_at = ?
                 WHERE id = ?;""",
                 updatedTask.getTitle(),
                 updatedTask.getDescription(),
                 updatedTask.getTaskStatus().name(),
                 updatedTask.getDueDate(),
+                LocalDateTime.now(),
                 updatedTask.getId());
     }
 }
