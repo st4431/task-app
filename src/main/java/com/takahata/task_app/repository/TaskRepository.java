@@ -2,6 +2,7 @@ package com.takahata.task_app.repository;
 
 import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.entity.TaskStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class TaskRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -25,11 +27,6 @@ public class TaskRepository {
         task.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
         return task;
     };
-
-    //コンストラクタの引数が一つの時は、@Autowiredは省略可能　
-    public TaskRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     public List<Task> findAllTasks() {
         return jdbcTemplate.query("""

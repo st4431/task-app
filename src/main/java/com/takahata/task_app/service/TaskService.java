@@ -5,6 +5,7 @@ import com.takahata.task_app.dto.TaskInputDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.repository.TaskRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +15,11 @@ import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class TaskService {
     @Autowired
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
-
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
-        this.taskRepository = taskRepository;
-        this.taskMapper = taskMapper;
-    }
 
     //読み取り専用のメソッドであることを明示し、処理を効率化させることができる
     @Transactional(readOnly = true)
