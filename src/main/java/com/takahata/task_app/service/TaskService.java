@@ -7,11 +7,13 @@ import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class TaskService {
     @Autowired
     private final TaskRepository taskRepository;
@@ -22,6 +24,8 @@ public class TaskService {
         this.taskMapper = taskMapper;
     }
 
+    //読み取り専用のメソッドであることを明示し、処理を効率化させることができる
+    @Transactional(readOnly = true)
     public List<Task> findAllTasks() {
         return taskRepository.findAllTasks();
     }
