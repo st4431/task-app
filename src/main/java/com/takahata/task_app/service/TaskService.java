@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -44,6 +43,12 @@ public class TaskService {
     }
 
     public void updateTask(TaskUpdateDto taskUpdateDto) {
-        taskRepository.updateTask(taskMapper.fromUpdateDtoToTask(taskUpdateDto));
+        //findTaskUpdateDtoByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
+        //時にはDRY原則を破ることもある
+        Task task = taskRepository.findTaskById(taskUpdateDto.getId())
+                .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
+        taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
+        taskRepository.updateTask(task);
     }
+
 }
