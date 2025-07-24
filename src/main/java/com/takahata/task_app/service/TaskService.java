@@ -23,20 +23,20 @@ public class TaskService {
     //読み取り専用のメソッドであることを明示し、処理を効率化させられる
     @Transactional(readOnly = true)
     public List<Task> findAll() {
-        return taskRepository.findAllTasks();
+        return taskRepository.findAll();
     }
 
     public void registerNewTask(TaskInputDto newTask) {
-        taskRepository.registerNewTask(taskMapper.fromInputDtoToTask(newTask));
+        taskRepository.save(taskMapper.fromInputDtoToTask(newTask));
     }
 
     public void deleteTask(long id) {
-        taskRepository.deleteTask(id);
+        taskRepository.deleteById(id);
     }
 
     //もし中身が空だったら例外を投げておく
     public TaskUpdateDto findTaskUpdateDtoById(long id) {
-        Task task = taskRepository.findTaskById(id)
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + id + "のタスクが見つかりません。"));
         return taskMapper.toTaskUpdateDto(task);
     }
@@ -44,15 +44,15 @@ public class TaskService {
     public void updateTask(TaskUpdateDto taskUpdateDto) {
         //findTaskByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
         //時にはDRY原則を破ることもある
-        Task task = taskRepository.findTaskById(taskUpdateDto.getId())
+        Task task = taskRepository.findById(taskUpdateDto.getId())
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
         taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
-        taskRepository.updateTask(task);
+        taskRepository.save(task);
     }
 
     //Stream APIを習得するための練習
     public List<Task> findTasksByStatus(TaskStatus taskStatus) {
-        return taskRepository.findAllTasks().stream()
+        return taskRepository.findAll().stream()
                 .filter(task -> task.getTaskStatus().equals(taskStatus))
                 .toList();
     }
