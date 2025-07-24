@@ -30,12 +30,12 @@ public class TaskService {
         taskRepository.registerNewTask(taskMapper.fromInputDtoToTask(newTask));
     }
 
-    public void deleteTask(int id) {
+    public void deleteTask(long id) {
         taskRepository.deleteTask(id);
     }
 
     //もし中身が空だったら例外を投げておく
-    public TaskUpdateDto findTaskUpdateDtoById(int id) {
+    public TaskUpdateDto findTaskUpdateDtoById(long id) {
         Task task = taskRepository.findTaskById(id)
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + id + "のタスクが見つかりません。"));
         return taskMapper.toTaskUpdateDto(task);

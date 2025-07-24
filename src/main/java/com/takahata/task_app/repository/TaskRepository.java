@@ -1,89 +1,10 @@
 package com.takahata.task_app.repository;
 
 import com.takahata.task_app.entity.Task;
-import com.takahata.task_app.entity.TaskStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+//classからinterfaceに変更し、JpaRepositoryを継承
+//<Task, Integer>は、扱うエンティティの型とその主キーの型を指定
+public interface TaskRepository extends JpaRepository<Task, Long> {
 
-@Repository
-@RequiredArgsConstructor
-public class TaskRepository {
-    private final JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<Task> taskRowMapper = (rs, rowNum) -> {
-        Task task = new Task();
-        task.setId(rs.getInt("id"));
-        task.setTitle(rs.getString("title"));
-        task.setDescription(rs.getString("description"));
-        task.setTaskStatus(TaskStatus.valueOf(rs.getString("task_status")));
-        if (rs.getDate("due_date") != null) {
-            task.setDueDate(rs.getDate("due_date").toLocalDate());
-        }
-        task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        task.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
-        return task;
-    };
-
-    public List<Task> findAllTasks() {
-        return jdbcTemplate.query("""
-                SELECT * FROM task;""",
-                taskRowMapper);
-    }
-
-    public void registerNewTask(Task task) {
-        jdbcTemplate.update("""
-                INSERT INTO task (
-                title,
-                description,
-                task_status,
-                due_date)
-                VALUES(?, ?, ?, ?);""",
-                task.getTitle(),
-                task.getDescription(),
-                task.getTaskStatus().name(),
-                task.getDueDate());
-    }
-
-    public void deleteTask(int id) {
-        jdbcTemplate.update("""
-                DELETE FROM task
-                WHERE id = ?;""",
-                id);
-    }
-
-    //Optional型で返すことで、中身が空の可能性を明示する
-    //Optional型が「空の可能性を持つこと」はエンジニアの間の共通認識のようなもの
-    public Optional<Task> findTaskById(int id) {
-        List<Task> taskList = jdbcTemplate.query("""
-                SELECT * FROM task
-                WHERE id = ?;""",
-                taskRowMapper,
-                id);
-        return taskList.stream().findFirst();
-    }
-
-    //更新日時もここでセットする。
-    public void updateTask(Task updatedTask) {
-        jdbcTemplate.update("""
-                UPDATE task
-                SET
-                title = ?,
-                description = ?,
-                task_status = ?,
-                due_date = ?,
-                updated_at = ?
-                WHERE id = ?;""",
-                updatedTask.getTitle(),
-                updatedTask.getDescription(),
-                updatedTask.getTaskStatus().name(),
-                updatedTask.getDueDate(),
-                LocalDateTime.now(),
-                updatedTask.getId());
-    }
 }
