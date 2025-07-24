@@ -1,6 +1,7 @@
 package com.takahata.task_app.service;
 
 import com.takahata.task_app.config.TaskMapper;
+import com.takahata.task_app.dto.TaskInputDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.exception.TaskNotFoundException;
@@ -48,16 +49,16 @@ class TaskServiceTest {
         dummyTask.setTitle("テストタスク");
 
         //同じくダミーデータ
-        TaskUpdateDto dummyDto = new TaskUpdateDto();
-        dummyDto.setId(1);
-        dummyDto.setTitle("テストタスク");
+        TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
+        dummyUpdateDto.setId(1);
+        dummyUpdateDto.setTitle("テストタスク");
 
         //「taskRepositoryのfindTaskById(1)が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
         //と命令しておく
         when(taskRepository.findTaskById(1)).thenReturn(Optional.of(dummyTask));
 
         //上と同じように、命令しておく
-        when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyDto);
+        when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyUpdateDto);
 
         //2. Act(実行)
         //ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
@@ -88,5 +89,24 @@ class TaskServiceTest {
         //例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
         //anyは「引数がどんな値でも成立する」ことを表した記述の仕方
         verify(taskMapper, never()).toTaskUpdateDto(any());
+    }
+
+    @Test
+    @DisplayName("新規登録のために、registerNewTaskが機能するかのテスト")
+    void registerNewTask_Success() {
+        TaskInputDto dummyInputDto = new TaskInputDto();
+        dummyInputDto.setTitle("テストタスク");
+        dummyInputDto.setDescription("テストタスク");
+        Task dummyTask = new Task();
+        dummyTask.setTitle("テストタスク");
+        dummyTask.setDescription("テストタスク");
+
+        when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
+        doNothing().when(taskRepository).registerNewTask(dummyTask);
+
+        taskService.registerNewTask(dummyInputDto);
+
+        verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
+        verify(taskRepository, times(1)).registerNewTask(dummyTask);
     }
 }
