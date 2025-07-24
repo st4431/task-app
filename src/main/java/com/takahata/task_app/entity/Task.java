@@ -2,7 +2,7 @@ package com.takahata.task_app.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Generated;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity //このクラスがDBのエンティティ（テーブル）に対応していることを示す
 @Table(name = "task") //対応するテーブル名を指定
+//@EntityListeners(AuditingEntityListener.class) //Auditing機能をこのエンティティで有効化
 public class Task {
 
 

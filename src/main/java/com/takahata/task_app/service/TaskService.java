@@ -19,7 +19,6 @@ import java.util.List;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
-
     //読み取り専用のメソッドであることを明示し、処理を効率化させられる
     @Transactional(readOnly = true)
     public List<Task> findAll() {
