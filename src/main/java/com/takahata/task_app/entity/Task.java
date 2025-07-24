@@ -15,7 +15,7 @@ public class Task {
 
     @Id //このフィールドが主キーであることを示す
     @GeneratedValue(strategy = GenerationType.IDENTITY) // DBの自動連番機能をフィールドで使用することを示す
-    private int id;
+    private long id;
 
     private String title;
     private String description;

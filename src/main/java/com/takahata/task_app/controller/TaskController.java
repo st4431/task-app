@@ -43,13 +43,13 @@ public class TaskController {
     }
 
     @PostMapping("/delete/{id}")
-    public String deleteTask(@PathVariable(name = "id") int id) {
+    public String deleteTask(@PathVariable(name = "id") long id) {
         taskService.deleteTask(id);
         return "redirect:/tasks/display";
     }
 
     @GetMapping("/update/{id}")
-    public String updateTask(Model model, @PathVariable(name = "id") int id) {
+    public String updateTask(Model model, @PathVariable(name = "id") long id) {
         TaskUpdateDto taskUpdateDto = taskService.findTaskUpdateDtoById(id);
         model.addAttribute("taskUpdateDto", taskUpdateDto);
         return "update-task";

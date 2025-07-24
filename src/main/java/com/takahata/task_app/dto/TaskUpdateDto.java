@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 public class
 TaskUpdateDto {
-    private int id;
+    private long id;
     @NotEmpty
     private String title;
     private String description;
