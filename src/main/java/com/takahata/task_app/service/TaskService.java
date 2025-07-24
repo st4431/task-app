@@ -4,10 +4,10 @@ import com.takahata.task_app.config.TaskMapper;
 import com.takahata.task_app.dto.TaskInputDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
+import com.takahata.task_app.entity.TaskStatus;
 import com.takahata.task_app.exception.TaskNotFoundException;
 import com.takahata.task_app.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +17,12 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class TaskService {
-    @Autowired
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
 
-    //読み取り専用のメソッドであることを明示し、処理を効率化させることができる
+    //読み取り専用のメソッドであることを明示し、処理を効率化させられる
     @Transactional(readOnly = true)
-    public List<Task> findAllTasks() {
+    public List<Task> findAll() {
         return taskRepository.findAllTasks();
     }
 
@@ -35,7 +34,7 @@ public class TaskService {
         taskRepository.deleteTask(id);
     }
 
-    //もし中身が空だったら例外を投げておく。
+    //もし中身が空だったら例外を投げておく
     public TaskUpdateDto findTaskUpdateDtoById(int id) {
         Task task = taskRepository.findTaskById(id)
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + id + "のタスクが見つかりません。"));
@@ -43,12 +42,19 @@ public class TaskService {
     }
 
     public void updateTask(TaskUpdateDto taskUpdateDto) {
-        //findTaskUpdateDtoByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
+        //findTaskByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
         //時にはDRY原則を破ることもある
         Task task = taskRepository.findTaskById(taskUpdateDto.getId())
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
         taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
         taskRepository.updateTask(task);
+    }
+
+    //Stream APIを習得するための練習
+    public List<Task> findTasksByStatus(TaskStatus taskStatus) {
+        return taskRepository.findAllTasks().stream()
+                .filter(task -> task.getTaskStatus().equals(taskStatus))
+                .toList();
     }
 
 }
