@@ -9,6 +9,7 @@ import com.takahata.task_app.repository.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -92,21 +93,27 @@ class TaskServiceTest {
     }
 
     @Test
-    @DisplayName("新規登録のために、registerNewTaskが機能するかのテスト")
+    @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
     void registerNewTask_Success() {
         TaskInputDto dummyInputDto = new TaskInputDto();
-        dummyInputDto.setTitle("テストタスク");
-        dummyInputDto.setDescription("テストタスク");
+        dummyInputDto.setTitle("期待するタイトル");
+        dummyInputDto.setDescription("期待する内容");
         Task dummyTask = new Task();
-        dummyTask.setTitle("テストタスク");
-        dummyTask.setDescription("テストタスク");
+        dummyTask.setTitle("期待するタイトル");
+        dummyTask.setDescription("期待する内容");
 
         when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
-        doNothing().when(taskRepository).registerNewTask(dummyTask);
+        doNothing().when(taskRepository).registerNewTask(any(Task.class));
 
         taskService.registerNewTask(dummyInputDto);
 
         verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
-        verify(taskRepository, times(1)).registerNewTask(dummyTask);
+        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+        verify(taskRepository, times(1)).registerNewTask(taskArgumentCaptor.capture());
+
+        Task capturedTask = taskArgumentCaptor.getValue();
+        assertThat(capturedTask.getTitle()).isEqualTo("期待するタイトル");
+        assertThat(capturedTask.getDescription()).isEqualTo("期待する内容");
+
     }
 }
