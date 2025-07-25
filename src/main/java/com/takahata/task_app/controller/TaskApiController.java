@@ -13,27 +13,26 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
-@RequestMapping("/tasks")
-public class TaskController {
+@RequestMapping("/api/tasks")
+public class TaskApiController {
     private final TaskService taskService;
 
-
-    @GetMapping("/display")
+    @GetMapping
     public String findAllTasks(Model model) {
         List<Task> taskList = taskService.findAll();
         model.addAttribute("tasks", taskList);
         return "display-tasks";
     }
 
-    @GetMapping("/register")
+    @GetMapping
     public String registerNewTask(Model model) {
         model.addAttribute("newTask", new TaskInputDto());
         return "input-task";
     }
 
-    @PostMapping("/register")
+    @PostMapping
     public String registerNewTask(@Validated @ModelAttribute("newTask") TaskInputDto newTask, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "input-task";
@@ -42,20 +41,20 @@ public class TaskController {
         return "redirect:/tasks/display";
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping
     public String deleteTask(@PathVariable(name = "id") long id) {
         taskService.deleteTask(id);
         return "redirect:/tasks/display";
     }
 
-    @GetMapping("/update/{id}")
+    @GetMapping
     public String updateTask(Model model, @PathVariable(name = "id") long id) {
         TaskUpdateDto taskUpdateDto = taskService.findTaskUpdateDtoById(id);
         model.addAttribute("taskUpdateDto", taskUpdateDto);
         return "update-task";
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping
     public String updateTask(@Validated @ModelAttribute("taskUpdateDto") TaskUpdateDto taskUpdateDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "update-task";
