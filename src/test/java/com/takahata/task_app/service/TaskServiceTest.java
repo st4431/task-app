@@ -42,7 +42,7 @@ class TaskServiceTest {
     @Test
     //テストケースに名前を付けるために付与するアノテーション
     @DisplayName("IDでタスクが正常に取得できる場合のテスト")
-    void findTaskById_Success() {
+    void findTaskUpdateDtoById_Success() {
         //1. Arrange(準備)
         //まず、ダミーデータを用意
         Task dummyTask = new Task();
@@ -63,7 +63,7 @@ class TaskServiceTest {
 
         //2. Act(実行)
         //ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
-        TaskUpdateDto actualResult = taskService.findTaskById(1);
+        TaskUpdateDto actualResult = taskService.findTaskUpdateDtoById(1);
 
         //3. Assert(検証)
         assertThat(actualResult.getId()).isEqualTo(1);
@@ -77,13 +77,13 @@ class TaskServiceTest {
 
     @Test
     @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
-    void findTaskById_ThrowsTaskNotFoundException() {
+    void findTaskById_ThrowsTaskUpdateDtoNotFoundException() {
         final int NON_EXISTENT_ID = 99;
 
         when(taskRepository.findTaskById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
         //対象の例外がちゃんとスローするか検証するためのメソッド
-        assertThrows(TaskNotFoundException.class, () -> taskService.findTaskById(NON_EXISTENT_ID));
+        assertThrows(TaskNotFoundException.class, () -> taskService.findTaskUpdateDtoById(NON_EXISTENT_ID));
 
         //たとえ例外がスローされるとしてもfindTaskByIdは一回呼び出されるので、その点を検証
         verify(taskRepository, times(1)).findTaskById(NON_EXISTENT_ID);
@@ -95,6 +95,7 @@ class TaskServiceTest {
     @Test
     @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
     void registerNewTask_Success() {
+        //Arrange
         TaskInputDto dummyInputDto = new TaskInputDto();
         dummyInputDto.setTitle("期待するタイトル");
         dummyInputDto.setDescription("期待する内容");
@@ -103,11 +104,17 @@ class TaskServiceTest {
         dummyTask.setDescription("期待する内容");
 
         when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
-        doNothing().when(taskRepository).registerNewTask(any(Task.class));
 
+        //今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
+//        doNothing().when(taskRepository).registerNewTask(any(Task.class));
+
+        //Act
         taskService.registerNewTask(dummyInputDto);
 
+        //Assert
         verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
+
+        // 中身が期待値と一致するか検証するため、ArgumentCaptorを使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕獲する
         ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
         verify(taskRepository, times(1)).registerNewTask(taskArgumentCaptor.capture());
 
