@@ -54,9 +54,10 @@ class TaskServiceTest {
         dummyUpdateDto.setId(1);
         dummyUpdateDto.setTitle("テストタスク");
 
-        //「taskRepositoryのfindTaskById(1)が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
+        //「taskRepositoryのfindById
+        //(1)が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
         //と命令しておく
-        when(taskRepository.findTaskById(1)).thenReturn(Optional.of(dummyTask));
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
 
         //上と同じように、命令しておく
         when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyUpdateDto);
@@ -70,23 +71,25 @@ class TaskServiceTest {
         assertThat(actualResult.getTitle()).isEqualTo("テストタスク");
 
         //実際に命令が実行されているかについても検証するために、
-        //「taskRepositoryのfindTaskById(1)は、ちゃんと1回呼ばれましたか？」と尋ねている
-        verify(taskRepository, times(1)).findTaskById(1);
+        //「taskRepositoryのfindById
+        //(1)は、ちゃんと1回呼ばれましたか？」と尋ねている
+        verify(taskRepository, times(1)).findById(1L);
         verify(taskMapper, times(1)).toTaskUpdateDto(dummyTask);
     }
 
     @Test
     @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
-    void findTaskById_ThrowsTaskUpdateDtoNotFoundException() {
-        final int NON_EXISTENT_ID = 99;
+    void findById_ThrowsTaskUpdateDtoNotFoundException() {
+        final long NON_EXISTENT_ID = 99L;
 
-        when(taskRepository.findTaskById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
+        when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
         //対象の例外がちゃんとスローするか検証するためのメソッド
         assertThrows(TaskNotFoundException.class, () -> taskService.findTaskUpdateDtoById(NON_EXISTENT_ID));
 
-        //たとえ例外がスローされるとしてもfindTaskByIdは一回呼び出されるので、その点を検証
-        verify(taskRepository, times(1)).findTaskById(NON_EXISTENT_ID);
+        //たとえ例外がスローされるとしてもfindById
+        //は一回呼び出されるので、その点を検証
+        verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);
         //例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
         //anyは「引数がどんな値でも成立する」ことを表した記述の仕方
         verify(taskMapper, never()).toTaskUpdateDto(any());
@@ -116,7 +119,7 @@ class TaskServiceTest {
 
         // 中身が期待値と一致するか検証するため、ArgumentCaptorを使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕獲する
         ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
-        verify(taskRepository, times(1)).registerNewTask(taskArgumentCaptor.capture());
+        verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
 
         Task capturedTask = taskArgumentCaptor.getValue();
         assertThat(capturedTask.getTitle()).isEqualTo("期待するタイトル");
