@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @Table(name = "task") //対応するテーブル名を指定
 @EntityListeners(AuditingEntityListener.class) //Auditing機能をこのエンティティで有効化
 public class Task {
-
-
     @Id //このフィールドが主キーであることを示す
     @GeneratedValue(strategy = GenerationType.IDENTITY) // DBの自動連番機能をフィールドで使用することを示す
     private long id;
