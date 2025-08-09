@@ -22,11 +22,13 @@ import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 //JUnit5でMockitoという便利なライブラリを使えるようにするアノテーション
-
+//@ExtendWithはSpring Bootの機能を使わない単体テストで使用するアノテーション
+//単体テストでは、SpringBootのDIコンテナを使用せず、、Mockitoというライブラリの最小限の機能だけでテストを行う
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
 
-    //テストしたいクラスのモックを注入し、テストを可能にするためのアノテーション
+    //単体テストにおいて、テストしたいクラスのインスタンスを作り、
+    //そこに@Mockがついた偽物のオブジェクトをDIするためのアノテーション
     @InjectMocks
     private TaskService taskService;
 
