@@ -31,4 +31,15 @@ public class Task {
 
     @LastModifiedDate //更新時に自動で日時をセット
     private LocalDateTime updatedAt;
+
+    //Taskクラスが1つのUserクラスに属することを示す
+    //つまり、複数のTaskクラスが同じUserを参照することができるということ
+    @ManyToOne
+
+    //Taskテーブルに置いて、idというカラムが外部キーとして使用されることを表す
+    //このカラムはUserテーブルの主キーを参照する
+    //nullable = falseは、このカラムが必ず値を持つ必要を表している
+    //つまり、Taskは必ずUserのどれかに属していなければならない
+    @JoinColumn(name = "id", nullable = false)
+    private User user;
 }
