@@ -6,14 +6,14 @@ CREATE TABLE IF NOT EXISTS task (
  due_date date,
  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-)
-;
+ user_id BIGINT,
+ FOREIGN KEY (user_id) REFERENCES user(id)
+);
 
 CREATE TABLE IF NOT EXISTS user (
- user_id BIGSERIAL PRIMARY KEY,
- user_name TEXT NOT NULL,
+ id BIGSERIAL PRIMARY KEY,
+ username TEXT NOT NULL,
  password TEXT,
  role VARCHAR(50) NOT NULL
-)
-;
+);
 
