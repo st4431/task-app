@@ -25,7 +25,7 @@ public class TaskApiController {
         return taskService.findAll();
     }
 
-    @PutMapping
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     //@RequestBodyはリクエストの本文に書かれるJSONデータをTaskInputDtoオブジェクトに変換する
     public void registerNewTask(@Validated @RequestBody TaskInputDto taskInputDto) {

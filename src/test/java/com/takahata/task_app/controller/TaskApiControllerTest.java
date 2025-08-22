@@ -47,7 +47,7 @@ public class TaskApiControllerTest {
 
         when(taskService.findAll()).thenReturn(List.of(task1, task2));
 
-        mockMvc.perform(get("/api/tasks"))//HTTPリクエストの実行を依頼、これにより
+        mockMvc.perform(get("/api/tasks"))//HTTPリクエストの実行を依頼
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))//「$」はJSON全体を表す
@@ -55,8 +55,6 @@ public class TaskApiControllerTest {
                 .andExpect(jsonPath("$[0].title", is("Test Task1")))
                 .andExpect(jsonPath("$[1].id", is(2)))
                 .andExpect(jsonPath("$[1].title", is("Test Task2")));
-
-
     }
 
 

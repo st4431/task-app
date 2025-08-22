@@ -9,3 +9,11 @@ CREATE TABLE IF NOT EXISTS task (
 )
 ;
 
+CREATE TABLE IF NOT EXISTS user (
+ user_id BIGSERIAL PRIMARY KEY,
+ user_name TEXT NOT NULL,
+ password TEXT,
+ role VARCHAR(50) NOT NULL
+)
+;
+
