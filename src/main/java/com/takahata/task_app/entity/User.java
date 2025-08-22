@@ -9,6 +9,10 @@ import lombok.Data;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    //Taskクラスの中にあるuserフィールドがこの外部キーの関係性のオーナーであることを示す
+    //つまり、TaskクラスがUserクラスに対して外部キーを持っているということ
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private long id;
 
     private String userName;
