@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS task (
  task_status VARCHAR(50) NOT NULL,
  due_date date,
  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
- updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+ updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
  user_id BIGINT,
  FOREIGN KEY (user_id) REFERENCES user(id)
 );

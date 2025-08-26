@@ -36,6 +36,6 @@ public class Task {
     // Taskエンティティは、一つのUserエンティティに属します。
     // "user_id"というカラムを通じて、usersテーブルと結合します。
     @ManyToOne(fetch = FetchType.LAZY)// LAZYフェッチはパフォーマンス上のベストプラクティスです
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
