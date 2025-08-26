@@ -32,14 +32,10 @@ public class Task {
     @LastModifiedDate //更新時に自動で日時をセット
     private LocalDateTime updatedAt;
 
-    //Taskクラスが1つのUserクラスに属することを示す
-    //つまり、複数のTaskクラスが同じUserを参照することができるということ
-    @ManyToOne(fetch = FetchType.LAZY)
 
-    //Taskテーブルに置いて、idというカラムが外部キーとして使用されることを表す
-    //このカラムはUserテーブルの主キーを参照する
-    //nullable = falseは、このカラムが必ず値を持つ必要を表している
-    //つまり、Taskは必ずUserのどれかに属していなければならない
+    // Taskエンティティは、一つのUserエンティティに属します。
+    // "user_id"というカラムを通じて、usersテーブルと結合します。
+    @ManyToOne(fetch = FetchType.LAZY)// LAZYフェッチはパフォーマンス上のベストプラクティスです
     @JoinColumn(name = "user_id")
     private User user;
 }
