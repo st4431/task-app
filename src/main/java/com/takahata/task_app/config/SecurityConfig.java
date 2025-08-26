@@ -19,7 +19,7 @@ public class SecurityConfig {
         ).logout(logout -> logout
                 .logoutSuccessUrl("/")//ログアウトした後の遷移先
         ).authorizeHttpRequests(ahr -> ahr
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().requestMatchers("/login").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/admin").hasRole("ADMIN")//「/admin」というurlは、ADMIN（管理者）でないと遷移できませんということ
                 .anyRequest().authenticated()//
