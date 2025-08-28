@@ -1,9 +1,11 @@
+-- H2データベース用のテーブル定義
+
 -- 既存のテーブルを（存在すれば）削除する
 -- taskテーブルがusersテーブルを参照しているため、taskから先に削除する必要がある
 DROP TABLE IF EXISTS task;
 DROP TABLE IF EXISTS users;
 
--- H2データベース用のテーブル定義
+-- usersテーブルを作成
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
@@ -11,6 +13,7 @@ CREATE TABLE users (
     role VARCHAR(50) NOT NULL
 );
 
+-- taskテーブルを作成
 CREATE TABLE task (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title TEXT NOT NULL,
