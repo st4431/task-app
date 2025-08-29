@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS task (
  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
  updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
  user_id BIGINT,
- FOREIGN KEY (user_id) REFERENCES user(id)
+ FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 
