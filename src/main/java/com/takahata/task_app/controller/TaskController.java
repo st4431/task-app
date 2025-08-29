@@ -17,6 +17,12 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    // ホーム画面を表示
+    @GetMapping("/home")
+    public String showHome() {
+        return "home"; // home.html を返す
+    }
+
     // タスク一覧画面を表示
     @GetMapping
     public String listTasks(Model model) {
