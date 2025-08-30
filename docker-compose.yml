@@ -1,0 +1,35 @@
+# (1) バージョン宣言
+version: '3.8'
+
+# (2) サービス（コンテナ）定義の開始
+services:
+
+  # (3) データベース・コンテナ (db)
+  db:
+    image: postgres:14-alpine
+    container_name: task-app-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: taskapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # (4) アプリケーション・コンテナ (app)
+  app:
+    build: .
+    container_name: task-app-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskapp
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - db
+
+# (5) データ保管場所の定義
+volumes:
+  postgres_data:
