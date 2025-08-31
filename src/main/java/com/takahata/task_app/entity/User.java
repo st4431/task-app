@@ -1,5 +1,6 @@
 package com.takahata.task_app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class User {
     //Taskクラスの中にあるuserフィールドがこの外部キーの関係性のオーナーであることを示す
     //つまり、TaskクラスがUserクラスに対して外部キーを持っているということ
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Task> tasks;
 }
 
