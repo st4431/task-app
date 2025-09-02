@@ -1,68 +1,43 @@
+# GitHub Actionsのワークフロー名を定義します
 name: Deploy to Amazon ECS
 
+# このワークフローが実行されるタイミングを定義します
 on:
+  # mainブランチにpushされたときに実行されます
   push:
     branches:
       - main
 
+# 環境変数を定義します
 env:
   ECR_REPOSITORY: task-app
   AWS_REGION: ap-southeast-2
-  # ECSのタスク定義ファミリー名とコンテナ名を環境変数に追加
+  # ECSのタスク定義ファミリー名を指定
   ECS_TASK_DEFINITION_FAMILY: task-app-def
+  # ECSのサービス名を指定
+  ECS_SERVICE_NAME: task-app-def-service
+  # ECSのクラスター名を指定
+  ECS_CLUSTER_NAME: task-app-cluster
+  # タスク定義内のコンテナ名を指定（AWSで確認した名前にしてください）
   ECS_CONTAINER_NAME: task-app
 
 jobs:
+  # build-and-deployという名前のジョブを定義します
   build-and-deploy:
+    # このジョブが実行される仮想環境を指定します（Ubuntuの最新版）
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
+    # ジョブのステップを定義します
     steps:
+      # 1. リポジトリのコードをチェックアウトします
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. AWSの認証情報を設定します
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      # --- ↓↓↓ ここから下が修正箇所 ↓↓↓ ---
-
-      - name: Download task definition
-        id: download-task-def
-        run: |
-          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION_FAMILY }} --query taskDefinition > task-definition.json
-          echo "task-definition-path=$(pwd)/task-definition.json" >> $GITHUB_OUTPUT
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: render-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ steps.download-task-def.outputs.task-definition-path }}
-          container-name: ${{ env.ECS_CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: task-app-def-service # あなたのECSサービス名
-          cluster: task-app-cluster       # あなたのECSクラスター名
-          wait-for-service-stability: true
+          aws-secret-access-key:
