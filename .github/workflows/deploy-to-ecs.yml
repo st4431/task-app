@@ -18,7 +18,7 @@ env:
   ECS_SERVICE_NAME: task-app-def-service
   # ECSのクラスター名を指定
   ECS_CLUSTER_NAME: task-app-cluster
-  # タスク定義内のコンテナ名を指定（AWSで確認した名前にしてください）
+  # タスク定義内のコンテナ名を指定（AWSで確認した正しい名前にしてください）
   ECS_CONTAINER_NAME: task-app
 
 jobs:
@@ -40,4 +40,47 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key:
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Amazon ECRにログインします
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 4. Dockerイメージをビルド、タグ付けし、ECRにプッシュします
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # 5. 現在のタスク定義をダウンロードし、不要なキーを削除します
+      - name: Download and clean task definition
+        id: download-task-def
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION_FAMILY }} --query taskDefinition > task-definition-raw.json
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .tags, .enableFaultInjection?)' task-definition-raw.json > task-definition.json
+          echo "task-definition-path=$(pwd)/task-definition.json" >> $GITHUB_OUTPUT
+
+      # 6. タスク定義ファイルに新しいイメージIDを反映させます
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: render-task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.download-task-def.outputs.task-definition-path }}
+          container-name: ${{ env.ECS_CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      # 7. 更新したタスク定義をECSにデプロイします
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_NAME }}
+          cluster: ${{ env.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
