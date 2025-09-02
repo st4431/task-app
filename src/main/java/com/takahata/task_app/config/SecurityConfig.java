@@ -24,9 +24,9 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/**").authenticated()
                         // 上記で許可したもの以外は、すべて認証を要求する設定（安全なデフォルト）
                         .anyRequest().permitAll()
-                )
+                );
                 // この設定では httpBasic 認証ではなく、フォームベースのログインがデフォルトで有効になります
-                .formLogin(form -> {});
+//                .formLogin(form -> {});
 
         return http.build();
     }
