@@ -10,7 +10,7 @@ env:
   AWS_REGION: ap-southeast-2
   # ECSのタスク定義ファミリー名とコンテナ名を環境変数に追加
   ECS_TASK_DEFINITION_FAMILY: task-app-def
-  ECS_CONTAINER_NAME: task-app-app
+  ECS_CONTAINER_NAME: task-app
 
 jobs:
   build-and-deploy:
