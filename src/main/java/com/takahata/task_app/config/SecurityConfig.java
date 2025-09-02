@@ -7,27 +7,21 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toStaticResources;
-
 @Configuration
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // httpオブジェクトから設定を開始し、最後にbuild()を呼び出すまで
+        // セミコロン(;)は記述しません。
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
-                        // Web UIからのリクエスト（GET, POST, PUT, DELETE全て）を明示的に許可します
-//                        .requestMatchers("/home", "/tasks/**").permitAll()
-                        // APIエンドポイントは引き続き認証を要求します
-//                        .requestMatchers("/api/**").authenticated()
-                        // 上記で許可したもの以外は、すべて認証を要求する設定（安全なデフォルト）
+                        // すべてのリクエストを認証なしで許可する
                         .anyRequest().permitAll()
                 );
-                // この設定では httpBasic 認証ではなく、フォームベースのログインがデフォルトで有効になります
-//                .formLogin(form -> {});
 
+        // すべての設定が終わった後、最後にhttpオブジェクトを返します。
         return http.build();
     }
 }
