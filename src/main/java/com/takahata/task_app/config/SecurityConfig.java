@@ -23,7 +23,7 @@ public class SecurityConfig {
                         // APIエンドポイントは引き続き認証を要求します
 //                        .requestMatchers("/api/**").authenticated()
                         // 上記で許可したもの以外は、すべて認証を要求する設定（安全なデフォルト）
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 // この設定では httpBasic 認証ではなく、フォームベースのログインがデフォルトで有効になります
                 .formLogin(form -> {});
