@@ -17,11 +17,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
+//                        .requestMatchers(toStaticResources().atCommonLocations()).permitAll()
                         // Web UIからのリクエスト（GET, POST, PUT, DELETE全て）を明示的に許可します
-                        .requestMatchers("/home", "/tasks/**").permitAll()
+//                        .requestMatchers("/home", "/tasks/**").permitAll()
                         // APIエンドポイントは引き続き認証を要求します
-                        .requestMatchers("/api/**").authenticated()
+//                        .requestMatchers("/api/**").authenticated()
                         // 上記で許可したもの以外は、すべて認証を要求する設定（安全なデフォルト）
                         .anyRequest().authenticated()
                 )
