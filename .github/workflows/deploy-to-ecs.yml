@@ -1,0 +1,75 @@
+# GitHub Actionsのワークフロー名を定義します
+name: Deploy to Amazon ECS
+
+# このワークフローが実行されるタイミングを定義します
+on:
+  # mainブランチにpushされたときに実行されます
+  push:
+    branches:
+      - main
+
+# 環境変数を定義します。ECRリポジトリ名とリージョンをここに設定します
+env:
+  ECR_REPOSITORY: task-app
+  AWS_REGION: ap-southeast-2
+
+jobs:
+  # build-and-deployという名前のジョブを定義します
+  build-and-deploy:
+    # このジョブが実行される仮想環境を指定します（Ubuntuの最新版）
+    runs-on: ubuntu-latest
+    # ジョブの実行に必要な権限を設定します
+    permissions:
+      contents: read
+
+    # ジョブのステップを定義します
+    steps:
+      # 1. リポジトリのコードをチェックアウトします
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. AWSの認証情報を設定します
+      # GitHubのSecretsに保存したAWSのキーを使ってAWSにログインします
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 3. Amazon ECRにログインします
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # 4. Dockerイメージをビルド、タグ付けし、ECRにプッシュします
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          # ECRのレジストリURIとイメージタグを環境変数に設定します
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }} # pushされたコミットのハッシュ値をタグとして使用
+        run: |
+          # Dockerイメージをビルド
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          # ビルドしたイメージをECRにプッシュ
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # プッシュしたイメージのURIを出力として設定
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      # 5. ECSのタスク定義を更新し、サービスをデプロイします
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          # ECSのタスク定義ファミリー名を指定 (ECSで確認できます)
+          task-definition: task-app-def
+          # ECSのサービス名を指定 (ECSで確認できます)
+          service: task-app-def-service
+          # ECSのクラスター名を指定 (ECSで確認できます)
+          cluster: task-app-cluster
+          # デプロイが完了するまで待つ設定
+          wait-for-service-stability: true
+          # タスク定義内のどのコンテナのイメージを更新するか指定
+          # build-imageステップで出力した新しいイメージURIで上書きします
+          image: ${{ steps.build-image.outputs.image }}
+          container-name: task-app-app # Docker Composeファイルやタスク定義で設定したコンテナ名
