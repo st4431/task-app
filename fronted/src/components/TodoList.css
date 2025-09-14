@@ -1,0 +1,4 @@
+.done {
+  text-decoration: line-through; /* 斜線を引く */
+  color: #aaa; /* 文字色を少し薄くする */
+}

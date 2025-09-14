@@ -45,3 +45,7 @@ src/main/resources/application-prod.properties
 
 # Log files
 *.log
+
+# Fronted
+fronted/node_modules
+fronted/dist
