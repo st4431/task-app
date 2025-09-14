@@ -7,16 +7,20 @@ import com.takahata.task_app.entity.TaskStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 public class TaskMapper {
     public Task fromInputDtoToTask(TaskInputDto taskInputDto) {
         Task task = new Task();
+        // statusのnullは許されていないので、デフォルト値をここでいれいぇ
+        TaskStatus status = Optional.ofNullable(taskInputDto.getTaskStatus())
+                                    .orElse(TaskStatus.NOT_STARTED);
         mapCommonFields(
                 task,
                 taskInputDto.getTitle(),
                 taskInputDto.getDescription(),
-                taskInputDto.getTaskStatus(),
+                status,
                 taskInputDto.getDueDate()
         );
         return task;
