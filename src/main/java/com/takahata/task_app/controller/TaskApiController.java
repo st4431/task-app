@@ -38,11 +38,8 @@ public class TaskApiController {
         taskService.deleteTask(id);
     }
 
-
-    @PutMapping("/{id}")
-    public void updateTask(@PathVariable long id,
-                           @Validated @RequestBody TaskUpdateDto taskUpdateDto) {
-        taskUpdateDto.setId(id);
+    @PutMapping
+    public void updateTask(@RequestBody TaskUpdateDto taskUpdateDto) {
         taskService.updateTask(taskUpdateDto);
     }
 }

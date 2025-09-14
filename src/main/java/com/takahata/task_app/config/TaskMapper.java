@@ -27,6 +27,11 @@ public class TaskMapper {
     }
 
     public void updateTaskFromUpdateDto(Task task, TaskUpdateDto taskUpdateDto) {
+        if (taskUpdateDto.getTaskStatus() == TaskStatus.NOT_STARTED) {
+            taskUpdateDto.setTaskStatus(TaskStatus.COMPLETED);
+        } else if (taskUpdateDto.getTaskStatus() == TaskStatus.COMPLETED) {
+            taskUpdateDto.setTaskStatus(TaskStatus.NOT_STARTED);
+        }
         mapCommonFields(
                 task,
                 taskUpdateDto.getTitle(),
