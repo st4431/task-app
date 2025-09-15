@@ -1,10 +1,7 @@
-# (1) バージョン宣言
-# バージョン宣言はしなくてもいいらしい。何も記述しなければ常に最新のバージョンが適用されるから。
+# バージョン宣言は最新の仕様に準拠するため、省略するのが一般的です
 
-# (2) サービス（コンテナ）定義の開始
 services:
-
-  # (3) データベース・コンテナ (db)
+  # (1) データベース・コンテナ (変更なし)
   db:
     image: postgres:14-alpine
     container_name: task-app-db
@@ -17,19 +14,48 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # (4) アプリケーション・コンテナ (app)
-  app:
-    build: .
-    container_name: task-app-app
+  # (2) バックエンド・コンテナ (開発用に変更)
+  backend:
+    # Java17がインストール済みのイメージをベースにします
+    image: eclipse-temurin:17-jdk-jammy
+    container_name: task-app-backend
+    # ローカルのbackendディレクトリをコンテナ内の/appに同期させます
+    volumes:
+      - ./backend:/app
+    # コンテナ内での作業ディレクトリを指定
+    working_dir: /app
+    # 起動コマンドを./gradlew bootRunに変更し、ホットリロードを有効にします
+    command: ./gradlew bootRun
     ports:
       - "8080:8080"
     environment:
+      # コンテナ内からdbコンテナへ接続するための設定
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskapp
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+    # dbコンテナが起動してからbackendを起動するように依存関係を設定
     depends_on:
       - db
 
-# (5) データ保管場所の定義
+  # (3) フロントエンド・コンテナ (新規追加)
+  frontend:
+    # Node.jsがインストール済みのイメージをベースにします
+    image: node:20-alpine
+    container_name: task-app-frontend
+    # ローカルのfrontendディレクトリをコンテナ内の/appに同期させます
+    volumes:
+      - ./frontend:/app
+    # コンテナ内での作業ディレクトリを指定
+    working_dir: /app
+    # 起動コマンド。npm installを実行してから開発サーバーを起動します
+    command: sh -c "npm install && npm run dev"
+    ports:
+      # Viteのデフォルトポート5173を公開します
+      - "5173:5173"
+    # backendコンテナに依存させます（APIが先に起動するように）
+    depends_on:
+      - backend
+
+# (4) データ保管場所の定義 (変更なし)
 volumes:
   postgres_data:
