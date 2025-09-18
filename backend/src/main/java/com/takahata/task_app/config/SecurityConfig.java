@@ -16,13 +16,13 @@ public class SecurityConfig {
 
         http
                 .formLogin(login -> login
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
+                        .loginPage("/api/auth/login")
+                        .loginProcessingUrl("/api/auth/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
