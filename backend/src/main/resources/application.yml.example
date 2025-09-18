@@ -14,25 +14,59 @@ management:
 spring:
   jpa:
     hibernate:
+      # 本番環境では 'none' をデフォルトとする
+      # none にすることでアプリケーション起動時に、HibernateがDBのテーブル構造を
+      # 一切自動で変更、作成しないようにすることができる
+      # これにより、本番環境のDBのデータを誤って変更してしまうインシデントを防ぐことができる
       ddl-auto: none
 
   # --- Flyway Settings ---
+  # Flywayを有効化している
   flyway:
     enabled: true
 
+    # 既にテーブルが存在するDBにFlywayを導入するための設定
+    # これがないと、既にテーブルが存在しているのに同一のテーブルを作成しようとするため、エラーが発生する
+    # この設定により、既に実行されたsql文は、Flywayが「適用済み」と認識し、実行をスキップする
+    baseline-on-migrate: true
+
 ---
 # ===============================
-# "local" プロファイル用の設定テンプレート
+# "local" プロファイルが有効な時の設定
+# (spring.profiles.active=local で起動した場合)
 # ===============================
 spring:
   config:
     activate:
       on-profile: local
   datasource:
-    # 自分のローカルDBに合わせて設定してください
-    url: jdbc:postgresql://localhost:5432/taskapp_db
+    url:
     username:
-    password: "" # ここに自分のパスワードを入力
+    password: ${LOCAL_DB_PASSWORD}
   jpa:
     hibernate:
+      # validate にすることでアプリケーションの起動時にHibernateがJavaのエンティティクラスと
+      # Flywayが作成したDBのテーブル構造を比較し、差分があったら起動させないようにする
       ddl-auto: validate
+
+---
+# ===============================================
+# "production" プロファイルが有効な時の設定
+# (spring.profiles.active=production で起動した場合)
+# ===============================================
+spring:
+  config:
+    activate:
+      on-profile: production
+
+  datasource:
+    url:
+    username:
+    password: ${PROD_DB_PASSWORD}
+
+  # 本番環境では、セキュリティのため公開するActuatorエンドポイントを制限する
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
