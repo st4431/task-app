@@ -33,12 +33,8 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
-.vscode/
-src/main/resources/application-local.properties
-
-# Production properties file with secrets
-src/main/resources/application-prod.properties
+# 設定ファイル (シークレット情報を含むため)
+/backend/src/main/resources/application.yml
 
 # Mac OS generated files
 .DS_Store

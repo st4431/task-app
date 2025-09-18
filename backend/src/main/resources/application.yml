@@ -1,0 +1,39 @@
+# ===============================
+# 全環境共通の設定
+# ===============================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+# --- JPA / Hibernate Settings ---
+spring:
+  jpa:
+    hibernate:
+      # 本番環境では 'none' をデフォルトとする
+      ddl-auto: none
+
+  # --- Flyway Settings ---
+  flyway:
+    enabled: true
+
+---
+# ===============================
+# "local" プロファイルが有効な時の設定
+# (spring.profiles.active=local で起動した場合)
+# ===============================
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskapp_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate # 開発中はスキーマを検証する
