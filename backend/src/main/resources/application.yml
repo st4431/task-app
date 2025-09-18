@@ -25,7 +25,9 @@ spring:
   flyway:
     enabled: true
 
-    #
+    # 既にテーブルが存在するDBにFlywayを導入するための設定
+    # これがないと、既にテーブルが存在しているのに同一のテーブルを作成しようとするため、エラーが発生する
+    # この設定により、既に実行されたsql文は、Flywayが「適用済み」と認識し、実行をスキップする
     baseline-on-migrate: true
 
 ---
