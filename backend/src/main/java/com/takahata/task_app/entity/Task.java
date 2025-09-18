@@ -32,7 +32,6 @@ public class Task {
     @LastModifiedDate //更新時に自動で日時をセット
     private LocalDateTime updatedAt;
 
-
     // Taskエンティティは、一つのUserエンティティに属します。
     // "user_id"というカラムを通じて、usersテーブルと結合します。
     @ManyToOne(fetch = FetchType.LAZY)// LAZYフェッチはパフォーマンス上のベストプラクティスです
