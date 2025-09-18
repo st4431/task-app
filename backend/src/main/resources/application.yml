@@ -42,9 +42,31 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/taskapp_db
     username: st
-    password: password
+    password: ${LOCAL_DB_PASSWORD}
   jpa:
     hibernate:
       # validate にすることでアプリケーションの起動時にHibernateがJavaのエンティティクラスと
       # Flywayが作成したDBのテーブル構造を比較し、差分があったら起動させないようにする
       ddl-auto: validate
+
+---
+# ===============================================
+# "production" プロファイルが有効な時の設定
+# (spring.profiles.active=production で起動した場合)
+# ===============================================
+spring:
+  config:
+    activate:
+      on-profile: production
+
+  datasource:
+    url:
+    username: prod_user
+    password: ${PROD_DB_PASSWORD}
+
+  # 本番環境では、セキュリティのため公開するActuatorエンドポイントを制限する
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
