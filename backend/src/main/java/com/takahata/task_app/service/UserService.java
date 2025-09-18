@@ -15,14 +15,19 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-    public void registerUser(String username, String rawPassword, Role role) {
+    public User registerUser(String username, String rawPassword, String role) {
+        User newUser = new User();
         String hashedPassword = passwordEncoder.encode(rawPassword);
 
-        User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(hashedPassword);
-        newUser.setRole(role);
+        if (role.equals("USER")) {
+            newUser.setRole(Role.USER);
+        } else if (role.equals("ADMIN")) {
+            newUser.setRole(Role.ADMIN);
+        }
         userRepository.save(newUser);
+        return newUser;
     }
 
 }
