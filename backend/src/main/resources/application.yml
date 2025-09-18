@@ -15,11 +15,18 @@ spring:
   jpa:
     hibernate:
       # 本番環境では 'none' をデフォルトとする
+      # none にすることでアプリケーション起動時に、HibernateがDBのテーブル構造を
+      # 一切自動で変更、作成しないようにすることができる
+      # これにより、本番環境のDBのデータを誤って変更してしまうインシデントを防ぐことができる
       ddl-auto: none
 
   # --- Flyway Settings ---
+  # Flywayを有効化している
   flyway:
     enabled: true
+
+    #
+    baseline-on-migrate: true
 
 ---
 # ===============================
@@ -36,4 +43,6 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: validate # 開発中はスキーマを検証する
+      # validate にすることでアプリケーションの起動時にHibernateがJavaのエンティティクラスと
+      # Flywayが作成したDBのテーブル構造を比較し、差分があったら起動させないようにする
+      ddl-auto: validate
