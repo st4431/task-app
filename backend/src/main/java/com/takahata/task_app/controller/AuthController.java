@@ -5,6 +5,7 @@ import com.takahata.task_app.dto.RegisterRequestDto;
 import com.takahata.task_app.dto.RegisterResponseDto;
 import com.takahata.task_app.entity.User;
 import com.takahata.task_app.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class AuthController {
 
     // ResponseEntityを使用すると、ステータスコードとレスポンスボディ（JSONの戻り値みたいなもの）を自由に設定できる
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDto> registerUser(@RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<RegisterResponseDto> registerUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
         User newUser = userService.registerUser(registerRequestDto.getUsername(), registerRequestDto.getPassword(), registerRequestDto.getRole());
         RegisterResponseDto registerResponseDto = new RegisterResponseDto();
         userMapper.fromUserToRegisterDto(newUser);
