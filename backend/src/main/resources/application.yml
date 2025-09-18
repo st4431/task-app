@@ -41,7 +41,7 @@ spring:
       on-profile: local
   datasource:
     url: jdbc:postgresql://localhost:5432/taskapp_db
-    username: postgres
+    username: st
     password: password
   jpa:
     hibernate:
