@@ -21,6 +21,8 @@ public class UserService {
 
         newUser.setUsername(username);
         newUser.setPassword(hashedPassword);
+
+        // TODO:カスタム例外の作成、その処理の実装
         if (role.equals("USER")) {
             newUser.setRole(Role.USER);
         } else if (role.equals("ADMIN")) {
@@ -31,3 +33,4 @@ public class UserService {
     }
 
 }
+
