@@ -41,6 +41,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // ハッシュ化されたパスワードと入力値を比較し、認証判定を行うクラス
+    // 自分で認証判定ロジックを実装することも可能だが、記述量が多くなるためよく使用されている
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
