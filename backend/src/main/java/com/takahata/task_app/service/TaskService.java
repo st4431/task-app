@@ -1,6 +1,6 @@
 package com.takahata.task_app.service;
 
-import com.takahata.task_app.config.TaskMapper;
+import com.takahata.task_app.mapper.TaskMapper;
 import com.takahata.task_app.dto.TaskInputDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;

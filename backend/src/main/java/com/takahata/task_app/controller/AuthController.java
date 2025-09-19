@@ -1,6 +1,6 @@
 package com.takahata.task_app.controller;
 
-import com.takahata.task_app.config.UserMapper;
+import com.takahata.task_app.mapper.UserMapper;
 import com.takahata.task_app.dto.LoginRequestDto;
 import com.takahata.task_app.dto.LoginResponseDto;
 import com.takahata.task_app.dto.RegisterRequestDto;

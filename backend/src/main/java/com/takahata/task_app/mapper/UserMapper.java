@@ -1,4 +1,4 @@
-package com.takahata.task_app.config;
+package com.takahata.task_app.mapper;
 
 import com.takahata.task_app.dto.RegisterResponseDto;
 import com.takahata.task_app.entity.Role;
