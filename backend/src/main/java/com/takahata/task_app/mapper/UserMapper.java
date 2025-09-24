@@ -11,13 +11,7 @@ public class UserMapper {
         RegisterResponseDto registerResponseDto = new RegisterResponseDto();
         registerResponseDto.setId(user.getId());
         registerResponseDto.setUsername(user.getUsername());
-
-        // TODO:カスタム例外の作成、その処理の実装
-        if (user.getRole().equals(Role.USER)) {
-            registerResponseDto.setRole("USER");
-        } else if (user.getRole().equals(Role.ADMIN)) {
-            registerResponseDto.setRole("ADMIN");
-        }
+        registerResponseDto.setRole(user.getRole().name());
         return registerResponseDto;
     }
 

@@ -21,13 +21,14 @@ public class UserService {
 
         newUser.setUsername(username);
         newUser.setPassword(hashedPassword);
+        newUser.setRole(Role.USER);
 
-        // TODO:カスタム例外の作成、その処理の実装
-        if (role.equals("USER")) {
-            newUser.setRole(Role.USER);
-        } else if (role.equals("ADMIN")) {
-            newUser.setRole(Role.ADMIN);
-        }
+//        // TODO:カスタム例外の作成、その処理の実装
+//        if (role.equals("USER")) {
+//            newUser.setRole(Role.USER);
+//        } else if (role.equals("ADMIN")) {
+//            newUser.setRole(Role.ADMIN);
+//        }
         userRepository.save(newUser);
         return newUser;
     }
