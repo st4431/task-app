@@ -21,60 +21,58 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
-//JUnit5でMockitoという便利なライブラリを使えるようにするアノテーション
-//@ExtendWithはSpring Bootの機能を使わない単体テストで使用するアノテーション
-//単体テストでは、SpringBootのDIコンテナを使用せず、、Mockitoというライブラリの最小限の機能だけでテストを行う
+// JUnit5でMockitoという便利なライブラリを使えるようにするアノテーション
+// @ExtendWithはSpring Bootの機能を使わない単体テストで使用するアノテーション
+// 単体テストでは、SpringBootのDIコンテナを使用せず、Mockitoというライブラリの最小限の機能だけでテストを行う
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
 
-    //単体テストにおいて、テストしたいクラスのインスタンスを作り、
-    //そこに@Mockがついた偽物のオブジェクトをDIするためのアノテーション
+    // 単体テストにおいて、テストしたいクラスのインスタンスを作り、
+    // そこに@Mockがついた偽物のオブジェクトをDIするためのアノテーション
     @InjectMocks
     private TaskService taskService;
 
-    //実際のそのクラスでAutowiredしているクラスをモックとして注入し、テストを可能にするためのアノテーション
+    // 実際のそのクラスでAutowiredしているクラスをモックとして注入し、テストを可能にするためのアノテーション
     @Mock
     private TaskRepository taskRepository;
 
-    //@Mockは一つにまとめることができない
+    // @Mockは一つにまとめることができない
     @Mock
     private TaskMapper taskMapper;
 
-    //テストしたいメソッドごとに付与するアノテーション
+    // テストしたいメソッドごとに付与するアノテーション
     @Test
-    //テストケースに名前を付けるために付与するアノテーション
+    // テストケースに名前を付けるために付与するアノテーション
     @DisplayName("IDでタスクが正常に取得できる場合のテスト")
     void findTaskUpdateDtoById_Success() {
-        //1. Arrange(準備)
-        //まず、ダミーデータを用意
+        // 1. Arrange(準備)
+        // まず、ダミーデータを用意
         Task dummyTask = new Task();
         dummyTask.setId(1);
         dummyTask.setTitle("テストタスク");
 
-        //同じくダミーデータ
+        // 同じくダミーデータ
         TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
         dummyUpdateDto.setId(1);
         dummyUpdateDto.setTitle("テストタスク");
 
-        //「taskRepositoryのfindById
-        //(1)が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
-        //と命令しておく
+        // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
+        // と命令しておく
         when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
 
         //上と同じように、命令しておく
         when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyUpdateDto);
 
-        //2. Act(実行)
-        //ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
+        // 2. Act(実行)
+        // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
         TaskUpdateDto actualResult = taskService.findTaskUpdateDtoById(1);
 
-        //3. Assert(検証)
+        // 3. Assert(検証)
         assertThat(actualResult.getId()).isEqualTo(1);
         assertThat(actualResult.getTitle()).isEqualTo("テストタスク");
 
-        //実際に命令が実行されているかについても検証するために、
-        //「taskRepositoryのfindById
-        //(1)は、ちゃんと1回呼ばれましたか？」と尋ねている
+        // 実際に命令が実行されているかについても検証するために、
+        // 「 taskRepositoryのfindById (1)は、ちゃんと1回呼ばれましたか？」と尋ねている
         verify(taskRepository, times(1)).findById(1L);
         verify(taskMapper, times(1)).toTaskUpdateDto(dummyTask);
     }
@@ -86,21 +84,21 @@ class TaskServiceTest {
 
         when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
-        //対象の例外がちゃんとスローするか検証するためのメソッド
+        // 対象の例外がちゃんとスローするか検証するためのメソッド
         assertThrows(TaskNotFoundException.class, () -> taskService.findTaskUpdateDtoById(NON_EXISTENT_ID));
 
-        //たとえ例外がスローされるとしてもfindById
-        //は一回呼び出されるので、その点を検証
+        // 例外がスローされるとしても findById は一回呼び出されるので、その点を検証
         verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);
-        //例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
-        //anyは「引数がどんな値でも成立する」ことを表した記述の仕方
+
+        // 例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
+        // anyは「引数がどんな値でも成立する」ことを表した記述の仕方
         verify(taskMapper, never()).toTaskUpdateDto(any());
     }
 
     @Test
     @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
     void registerNewTask_Success() {
-        //Arrange
+        // Arrange
         TaskInputDto dummyInputDto = new TaskInputDto();
         dummyInputDto.setTitle("期待するタイトル");
         dummyInputDto.setDescription("期待する内容");
@@ -110,16 +108,16 @@ class TaskServiceTest {
 
         when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
 
-        //今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
+        // 今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
 //        doNothing().when(taskRepository).registerNewTask(any(Task.class));
 
-        //Act
+        // Act
         taskService.registerNewTask(dummyInputDto);
 
-        //Assert
+        // Assert
         verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
 
-        // 中身が期待値と一致するか検証するため、ArgumentCaptorを使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕獲する
+        // 中身が期待値と一致するか検証するため、 ArgumentCaptor を使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕まえる
         ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
         verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
 
