@@ -16,9 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+// @RequiredArgsConstructorはフィールドをfinalで宣言しないとインスタンスを挿入してくれない
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private JwtAuthFilter jwtAuthFilter;
+    private final JwtAuthFilter jwtAuthFilter;
 
     // formLoginだとSpring Securityのみで認証を処理してしまい、Controller層にリクエストが届かないため、Rest APIには対応していない
     // SSRのみに対応している
