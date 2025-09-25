@@ -41,30 +41,34 @@ class TaskServiceTest {
     @Mock
     private TaskMapper taskMapper;
 
+    final long FIRST_DUMMY_ID = 1L;
+    final long SECOND_DUMMY_ID = 2L;
+    final int ONE_INTERACTIONS_WITH_THIS_MOCK = 1;
+
     @Nested
     @DisplayName("findAllのテスト")
     class FindAllTests {
         @Test
         @DisplayName("タスクが存在する場合、すべてのタスクが返されること")
         void findAll_Success() {
-            List<Task> testTaskList = new ArrayList<>();
-            Task testTask1 = new Task();
-            testTask1.setId(1L);
-            testTask1.setTitle("test1");
-            testTaskList.add(testTask1);
-            Task testTask2 = new Task();
-            testTask2.setId(2L);
-            testTask2.setTitle("test2");
-            testTaskList.add(testTask2);
+            List<Task> expectedTasks = new ArrayList<>();
+            Task dummyTask1 = new Task();
+            dummyTask1.setId(FIRST_DUMMY_ID);
+            dummyTask1.setTitle("test1");
+            expectedTasks.add(dummyTask1);
+            Task dummyTask2 = new Task();
+            dummyTask2.setId(SECOND_DUMMY_ID);
+            dummyTask2.setTitle("test2");
+            expectedTasks.add(dummyTask2);
 
-            when(taskRepository.findAll()).thenReturn(testTaskList);
+            when(taskRepository.findAll()).thenReturn(expectedTasks);
 
             List<Task> actualList = taskService.findAll();
 
-            verify(taskRepository, times(1)).findAll();
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).findAll();
 
-            assertThat(actualList.size()).isEqualTo(testTaskList.size());
-            assertThat(actualList).isEqualTo(testTaskList);
+            assertThat(actualList.size()).isEqualTo(expectedTasks.size());
+            assertThat(actualList).isEqualTo(expectedTasks);
         }
 
         @Test
@@ -74,7 +78,7 @@ class TaskServiceTest {
 
             List<Task> actualList = taskService.findAll();
 
-            verify(taskRepository, times(1)).findAll();
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).findAll();
 
             assertThat(actualList).isEmpty();
             assertThat(actualList).isNotNull();
@@ -87,7 +91,7 @@ class TaskServiceTest {
 
             assertThrows(RuntimeException.class, () -> taskService.findAll());
 
-            verify(taskRepository, times(1)).findAll();
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).findAll();
         }
     }
 
@@ -99,32 +103,41 @@ class TaskServiceTest {
         void registerNewTask_Success() {
             // Arrange
             TaskInputDto dummyInputDto = new TaskInputDto();
-            dummyInputDto.setTitle("期待するタイトル");
-            dummyInputDto.setDescription("期待する内容");
+            dummyInputDto.setTitle("Expected title");
+            dummyInputDto.setDescription("Expected description");
             Task dummyTask = new Task();
-            dummyTask.setTitle("期待するタイトル");
-            dummyTask.setDescription("期待する内容");
+            dummyTask.setTitle("Expected title");
+            dummyTask.setDescription("Expected description");
 
             when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
-
-            // 今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
-//        doNothing().when(taskRepository).createTask(any(Task.class));
 
             // Act
             taskService.createTask(dummyInputDto);
 
             // Assert
-            verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
+            verify(taskMapper, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).fromInputDtoToTask(dummyInputDto);
 
             // 中身が期待値と一致するか検証するため、 ArgumentCaptor を使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕まえる
             ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
-            verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).save(taskArgumentCaptor.capture());
 
             Task capturedTask = taskArgumentCaptor.getValue();
             assertThat(capturedTask.getTitle()).isEqualTo(dummyTask.getTitle());
             assertThat(capturedTask.getDescription()).isEqualTo(dummyTask.getDescription());
 
         }
+    }
+
+    @Nested
+    @DisplayName("deleteTaskのテスト")
+    class DeleteTaskTests {
+        @Test
+        @DisplayName("正常にタスクを削除できる場合")
+        void deleteTask_Success() {
+
+
+        }
+
     }
 
     @Nested
@@ -137,93 +150,91 @@ class TaskServiceTest {
         void updateTask_Success() {
             // 1. Arrange(準備)
             // まず、ダミーデータを用意
-            final long DUMMY_ID = 1L;
             Task dummyTask = new Task();
-            dummyTask.setId(DUMMY_ID);
-            dummyTask.setTitle("更新前");
+            dummyTask.setId(FIRST_DUMMY_ID);
+            dummyTask.setTitle("Before updated");
 
             // 同じくダミーデータ
             TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
-            dummyUpdateDto.setId(DUMMY_ID);
-            dummyUpdateDto.setTitle("更新後");
+            dummyUpdateDto.setId(FIRST_DUMMY_ID);
+            dummyUpdateDto.setTitle("Updated");
 
-            Task updatedTask = new Task();
-            updatedTask.setId(DUMMY_ID);
-            updatedTask.setTitle("更新後");
+            Task expectedTask = new Task();
+            expectedTask.setId(FIRST_DUMMY_ID);
+            expectedTask.setTitle("Updated");
 
             // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
             // と命令しておく
-            when(taskRepository.findById(DUMMY_ID)).thenReturn(Optional.of(dummyTask));
-            when(taskMapper.updateTaskFromUpdateDto(dummyTask, dummyUpdateDto)).thenReturn(updatedTask);
+            when(taskRepository.findById(FIRST_DUMMY_ID)).thenReturn(Optional.of(dummyTask));
+            when(taskMapper.updateTaskFromUpdateDto(dummyTask, dummyUpdateDto)).thenReturn(expectedTask);
 
             // 2. Act(実行)
             // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
-            taskService.updateTask(DUMMY_ID, dummyUpdateDto);
+            taskService.updateTask(FIRST_DUMMY_ID, dummyUpdateDto);
 
-            verify(taskRepository, times(1)).findById(DUMMY_ID);
-            verify(taskMapper, times(1)).updateTaskFromUpdateDto(dummyTask, dummyUpdateDto);
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).findById(FIRST_DUMMY_ID);
+            verify(taskMapper, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).updateTaskFromUpdateDto(dummyTask, dummyUpdateDto);
 
             ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
-            verify(taskRepository, times(1)).save(argumentCaptor.capture());
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).save(argumentCaptor.capture());
 
             Task capturedTask = argumentCaptor.getValue();
-            assertThat(capturedTask.getId()).isEqualTo(updatedTask.getId());
-            assertThat(capturedTask.getTitle()).isEqualTo(updatedTask.getTitle());
+            assertThat(capturedTask.getId()).isEqualTo(expectedTask.getId());
+            assertThat(capturedTask.getTitle()).isEqualTo(expectedTask.getTitle());
         }
 
         @Test
         @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
         void updateTask_ThrowsTaskUpdateDtoNotFoundException() {
             final long NON_EXISTENT_ID = 99L;
-            TaskUpdateDto taskUpdateDto = new TaskUpdateDto();
-            taskUpdateDto.setId(NON_EXISTENT_ID);
+            TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
+            dummyUpdateDto.setId(NON_EXISTENT_ID);
 
             when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
             // 対象の例外がちゃんとスローするか検証するためのメソッド
-            assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(NON_EXISTENT_ID, taskUpdateDto));
+            assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(NON_EXISTENT_ID, dummyUpdateDto));
 
             // 例外がスローされるとしても findById は一回呼び出されるので、その点を検証
-            verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).findById(NON_EXISTENT_ID);
 
             // 例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
             // anyは「引数がどんな値でも成立する」ことを表した記述の仕方
-            verify(taskMapper, never()).toTaskUpdateDto(any());
+            verify(taskMapper, never()).updateTaskFromUpdateDto(any(Task.class), any(TaskUpdateDto.class));
             verify(taskRepository, never()).save(any(Task.class));
         }
 
         @Test
         @DisplayName("一部のフィールドだけが更新され、他がnullだった場合")
         void updateTask_ShouldUpdateFieldsToNull_WhenDtoFieldsAreNull() {
-            final long DUMMY_ID = 1L;
-            Task task = new Task();
-            task.setId(DUMMY_ID);
-            task.setTitle("更新前のタイトル");
-            task.setDescription("更新前の説明");
+            Task dummyTask = new Task();
+            dummyTask.setId(FIRST_DUMMY_ID);
+            dummyTask.setTitle("Before updated title");
+            dummyTask.setDescription("Before updated description");
 
-            TaskUpdateDto taskUpdateDto = new TaskUpdateDto();
-            taskUpdateDto.setId(DUMMY_ID);
-            taskUpdateDto.setTitle("更新後のタイトル");
-            taskUpdateDto.setDescription(null);
+            TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
+            dummyUpdateDto.setId(FIRST_DUMMY_ID);
+            dummyUpdateDto.setTitle("Updated title");
+            dummyUpdateDto.setDescription(null);
 
-            Task updatedTask = new Task();
-            updatedTask.setId(DUMMY_ID);
-            updatedTask.setTitle("更新後のタイトル");
-            updatedTask.setDescription(null);
+            Task expectedTask = new Task();
+            expectedTask.setId(FIRST_DUMMY_ID);
+            expectedTask.setTitle("Updated description");
+            expectedTask.setDescription(null);
 
-            when(taskRepository.findById(DUMMY_ID)).thenReturn(Optional.of(task));
-            when(taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto)).thenReturn(updatedTask);
+            when(taskRepository.findById(FIRST_DUMMY_ID)).thenReturn(Optional.of(dummyTask));
+            when(taskMapper.updateTaskFromUpdateDto(dummyTask, dummyUpdateDto)).thenReturn(expectedTask);
 
-            taskService.updateTask(DUMMY_ID, taskUpdateDto);
+            taskService.updateTask(FIRST_DUMMY_ID, dummyUpdateDto);
 
 
             ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
-            verify(taskRepository, times(1)).save(argumentCaptor.capture());
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).save(argumentCaptor.capture());
 
             Task capturedTask = argumentCaptor.getValue();
-            assertThat(capturedTask.getId()).isEqualTo(updatedTask.getId());
-            assertThat(capturedTask.getTitle()).isEqualTo(updatedTask.getTitle());
-            assertThat(capturedTask.getDescription()).isEqualTo(updatedTask.getDescription());
+            assertThat(capturedTask.getId()).isEqualTo(expectedTask.getId());
+            assertThat(capturedTask.getTitle()).isEqualTo(expectedTask.getTitle());
+            assertThat(capturedTask.getDescription()).isEqualTo(expectedTask.getDescription());
 
         }
     }
