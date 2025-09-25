@@ -49,11 +49,11 @@ class TaskServiceTest {
         void findAll_Success() {
             List<Task> testTaskList = new ArrayList<>();
             Task testTask1 = new Task();
-            testTask1.setId(1);
+            testTask1.setId(1L);
             testTask1.setTitle("test1");
             testTaskList.add(testTask1);
             Task testTask2 = new Task();
-            testTask2.setId(2);
+            testTask2.setId(2L);
             testTask2.setTitle("test2");
             testTaskList.add(testTask2);
 
@@ -63,7 +63,7 @@ class TaskServiceTest {
 
             verify(taskRepository, times(1)).findAll();
 
-            assertThat(actualList.size()).isEqualTo(2);
+            assertThat(actualList.size()).isEqualTo(testTaskList.size());
             assertThat(actualList).isEqualTo(testTaskList);
         }
 
@@ -92,7 +92,7 @@ class TaskServiceTest {
     }
 
     @Nested
-    @DisplayName("registerNewTaskのテスト")
+    @DisplayName("createTaskのテスト")
     class RegisterNewTaskTests {
         @Test
         @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
@@ -121,8 +121,8 @@ class TaskServiceTest {
             verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
 
             Task capturedTask = taskArgumentCaptor.getValue();
-            assertThat(capturedTask.getTitle()).isEqualTo("期待するタイトル");
-            assertThat(capturedTask.getDescription()).isEqualTo("期待する内容");
+            assertThat(capturedTask.getTitle()).isEqualTo(dummyTask.getTitle());
+            assertThat(capturedTask.getDescription()).isEqualTo(dummyTask.getDescription());
 
         }
     }
@@ -133,7 +133,7 @@ class TaskServiceTest {
         // テストしたいメソッドごとに付与するアノテーション
         @Test
         // テストケースに名前を付けるために付与するアノテーション
-        @DisplayName("IDでタスクが正常に取得できる場合のテスト")
+        @DisplayName("正常にタスクが更新できる場合")
         void updateTask_Success() {
             // 1. Arrange(準備)
             // まず、ダミーデータを用意
@@ -166,8 +166,8 @@ class TaskServiceTest {
             verify(taskRepository, times(1)).save(argumentCaptor.capture());
 
             Task capturedTask = argumentCaptor.getValue();
-            assertThat(capturedTask.getId()).isEqualTo(1);
-            assertThat(capturedTask.getTitle()).isEqualTo("更新後");
+            assertThat(capturedTask.getId()).isEqualTo(updatedTask.getId());
+            assertThat(capturedTask.getTitle()).isEqualTo(updatedTask.getTitle());
         }
 
         @Test
@@ -188,6 +188,7 @@ class TaskServiceTest {
             // 例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
             // anyは「引数がどんな値でも成立する」ことを表した記述の仕方
             verify(taskMapper, never()).toTaskUpdateDto(any());
+            verify(taskRepository, never()).save(any(Task.class));
         }
     }
 
