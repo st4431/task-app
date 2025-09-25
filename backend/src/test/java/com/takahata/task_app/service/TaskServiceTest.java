@@ -157,7 +157,7 @@ class TaskServiceTest {
 
             // 2. Act(実行)
             // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
-            taskService.updateTask(dummyUpdateDto);
+            taskService.updateTask(1L, dummyUpdateDto);
 
             verify(taskRepository, times(1)).findById(1L);
             verify(taskMapper, times(1)).updateTaskFromUpdateDto(dummyTask, dummyUpdateDto);
@@ -180,7 +180,7 @@ class TaskServiceTest {
             when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
             // 対象の例外がちゃんとスローするか検証するためのメソッド
-            assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(taskUpdateDto));
+            assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(NON_EXISTENT_ID, taskUpdateDto));
 
             // 例外がスローされるとしても findById は一回呼び出されるので、その点を検証
             verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);
