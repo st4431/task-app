@@ -39,13 +39,15 @@ public class TaskApiController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable long id) {
         taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping
-    public void updateTask(@RequestBody TaskUpdateDto taskUpdateDto) {
-        taskService.updateTask(taskUpdateDto);
+    public ResponseEntity<TaskResponseDto> updateTask(@RequestBody TaskUpdateDto taskUpdateDto) {
+        Task task = taskService.updateTask(taskUpdateDto);
+        TaskResponseDto taskResponseDto = taskMapper.toTaskResponseDto(task);
+        return ResponseEntity.ok(taskResponseDto);
     }
 }

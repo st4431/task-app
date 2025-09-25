@@ -44,14 +44,14 @@ public class TaskService {
         return taskMapper.toTaskUpdateDto(task);
     }
 
-    public TaskResponseDto updateTask(TaskUpdateDto taskUpdateDto) {
+    public Task updateTask(TaskUpdateDto taskUpdateDto) {
         // findTaskByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
         // 時にはDRY原則を破ることもある
         Task task = taskRepository.findById(taskUpdateDto.getId())
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
         taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
         taskRepository.save(task);
-        return taskMapper.toTaskResponseDto(task);
+        return task;
     }
 
     // Stream APIを習得するための練習
