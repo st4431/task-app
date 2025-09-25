@@ -44,9 +44,11 @@ public class TaskApiController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping
-    public ResponseEntity<TaskResponseDto> updateTask(@RequestBody TaskUpdateDto taskUpdateDto) {
-        Task task = taskService.updateTask(taskUpdateDto);
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskResponseDto> updateTask(
+            @PathVariable long id,
+            @RequestBody TaskUpdateDto taskUpdateDto) {
+        Task task = taskService.updateTask(id, taskUpdateDto);
         TaskResponseDto taskResponseDto = taskMapper.toTaskResponseDto(task);
         return ResponseEntity.ok(taskResponseDto);
     }

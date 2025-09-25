@@ -44,10 +44,10 @@ public class TaskService {
         return taskMapper.toTaskUpdateDto(task);
     }
 
-    public Task updateTask(TaskUpdateDto taskUpdateDto) {
+    public Task updateTask(long id, TaskUpdateDto taskUpdateDto) {
         // findTaskByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
         // 時にはDRY原則を破ることもある
-        Task task = taskRepository.findById(taskUpdateDto.getId())
+        Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
         taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
         taskRepository.save(task);
