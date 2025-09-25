@@ -7,12 +7,15 @@ import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.exception.TaskNotFoundException;
 import com.takahata.task_app.repository.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
+imp　ort org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessorKt;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
@@ -128,54 +131,58 @@ class TaskServiceTest {
     }
 
     @Nested
-    @DisplayName("findTaskUpdateDtoByIdのテスト")
-    class FindTaskUpdateDtoByIdTests {
+    @DisplayName("updateTaskのテスト")
+    class UpdateTaskTests {
         // テストしたいメソッドごとに付与するアノテーション
         @Test
         // テストケースに名前を付けるために付与するアノテーション
         @DisplayName("IDでタスクが正常に取得できる場合のテスト")
-        void findTaskUpdateDtoById_Success() {
+        void updateTask_Success() {
             // 1. Arrange(準備)
             // まず、ダミーデータを用意
             Task dummyTask = new Task();
             dummyTask.setId(1);
-            dummyTask.setTitle("テストタスク");
+            dummyTask.setTitle("更新前");
 
             // 同じくダミーデータ
             TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
             dummyUpdateDto.setId(1);
-            dummyUpdateDto.setTitle("テストタスク");
+            dummyUpdateDto.setTitle("更新後");
+
+            Task updatedTask = new Task();
+            updatedTask.setId(1);
+            updatedTask.setTitle("更新後");
 
             // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
             // と命令しておく
             when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
 
-            //上と同じように、命令しておく
-            when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyUpdateDto);
-
             // 2. Act(実行)
             // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
-            TaskUpdateDto actualResult = taskService.findTaskUpdateDtoById(1);
+            taskService.updateTask(dummyUpdateDto);
 
-            // 3. Assert(検証)
-            assertThat(actualResult.getId()).isEqualTo(1);
-            assertThat(actualResult.getTitle()).isEqualTo("テストタスク");
-
-            // 実際に命令が実行されているかについても検証するために、
-            // 「 taskRepositoryのfindById (1)は、ちゃんと1回呼ばれましたか？」と尋ねている
             verify(taskRepository, times(1)).findById(1L);
-            verify(taskMapper, times(1)).toTaskUpdateDto(dummyTask);
+            verify(taskMapper, times(1)).updateTaskFromUpdateDto(dummyTask, dummyUpdateDto);
+
+            ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
+            verify(taskRepository, times(1)).save(argumentCaptor.capture());
+
+            Task capturedTask = argumentCaptor.getValue();
+            assertThat(capturedTask.getId()).isEqualTo(1);
+            assertThat(capturedTask.getTitle()).isEqualTo("更新後");
         }
 
         @Test
         @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
         void findById_ThrowsTaskUpdateDtoNotFoundException() {
             final long NON_EXISTENT_ID = 99L;
+            TaskUpdateDto taskUpdateDto = new TaskUpdateDto();
+            taskUpdateDto.setId(NON_EXISTENT_ID);
 
             when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
             // 対象の例外がちゃんとスローするか検証するためのメソッド
-            assertThrows(TaskNotFoundException.class, () -> taskService.findTaskUpdateDtoById(NON_EXISTENT_ID));
+            assertThrows(TaskNotFoundException.class, () -> taskService.updateTask(taskUpdateDto));
 
             // 例外がスローされるとしても findById は一回呼び出されるので、その点を検証
             verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);

@@ -26,7 +26,7 @@ public class TaskMapper {
         return task;
     }
 
-    public void updateTaskFromUpdateDto(Task task, TaskUpdateDto taskUpdateDto) {
+    public Task updateTaskFromUpdateDto(Task task, TaskUpdateDto taskUpdateDto) {
         mapCommonFields(
                 task,
                 taskUpdateDto.getTitle(),
@@ -34,9 +34,10 @@ public class TaskMapper {
                 taskUpdateDto.getTaskStatus(),
                 taskUpdateDto.getDueDate()
         );
+        return task;
     }
 
-    private void mapCommonFields(
+    private Task mapCommonFields(
             Task task,
             String title,
             String description,
@@ -47,6 +48,7 @@ public class TaskMapper {
         task.setDescription(description);
         task.setTaskStatus(taskStatus);
         task.setDueDate(dueDate);
+        return task;
     }
 
     public TaskUpdateDto toTaskUpdateDto(Task task) {
