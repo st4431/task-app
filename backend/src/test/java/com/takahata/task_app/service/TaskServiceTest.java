@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,4 +128,28 @@ class TaskServiceTest {
         assertThat(capturedTask.getDescription()).isEqualTo("期待する内容");
 
     }
+
+    @Test
+    @DisplayName("タスクが存在する場合、すべてのタスクが返されること")
+    void findAll_Success() {
+        List<Task> testTaskList = new ArrayList<>();
+        Task testTask1 = new Task();
+        testTask1.setId(1);
+        testTask1.setTitle("test1");
+        testTaskList.add(testTask1);
+        Task testTask2 = new Task();
+        testTask2.setId(2);
+        testTask2.setTitle("test2");
+        testTaskList.add(testTask2);
+
+        when(taskRepository.findAll()).thenReturn(testTaskList);
+
+        List<Task> actualList = taskService.findAll();
+
+        verify(taskRepository, times(1)).findAll();
+
+        assertThat(actualList.size()).isEqualTo(2);
+        assertThat(actualList).isEqualTo(testTaskList);
+    }
+
 }
