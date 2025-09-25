@@ -7,6 +7,7 @@ import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.exception.TaskNotFoundException;
 import com.takahata.task_app.repository.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,138 +41,155 @@ class TaskServiceTest {
     @Mock
     private TaskMapper taskMapper;
 
-    // テストしたいメソッドごとに付与するアノテーション
-    @Test
-    // テストケースに名前を付けるために付与するアノテーション
-    @DisplayName("IDでタスクが正常に取得できる場合のテスト")
-    void findTaskUpdateDtoById_Success() {
-        // 1. Arrange(準備)
-        // まず、ダミーデータを用意
-        Task dummyTask = new Task();
-        dummyTask.setId(1);
-        dummyTask.setTitle("テストタスク");
+    @Nested
+    @DisplayName("findAllのテスト")
+    class FindAllTests {
+        @Test
+        @DisplayName("タスクが存在する場合、すべてのタスクが返されること")
+        void findAll_Success() {
+            List<Task> testTaskList = new ArrayList<>();
+            Task testTask1 = new Task();
+            testTask1.setId(1);
+            testTask1.setTitle("test1");
+            testTaskList.add(testTask1);
+            Task testTask2 = new Task();
+            testTask2.setId(2);
+            testTask2.setTitle("test2");
+            testTaskList.add(testTask2);
 
-        // 同じくダミーデータ
-        TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
-        dummyUpdateDto.setId(1);
-        dummyUpdateDto.setTitle("テストタスク");
+            when(taskRepository.findAll()).thenReturn(testTaskList);
 
-        // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
-        // と命令しておく
-        when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
+            List<Task> actualList = taskService.findAll();
 
-        //上と同じように、命令しておく
-        when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyUpdateDto);
+            verify(taskRepository, times(1)).findAll();
 
-        // 2. Act(実行)
-        // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
-        TaskUpdateDto actualResult = taskService.findTaskUpdateDtoById(1);
+            assertThat(actualList.size()).isEqualTo(2);
+            assertThat(actualList).isEqualTo(testTaskList);
+        }
 
-        // 3. Assert(検証)
-        assertThat(actualResult.getId()).isEqualTo(1);
-        assertThat(actualResult.getTitle()).isEqualTo("テストタスク");
+        @Test
+        @DisplayName("タスクが存在しない場合、空のリストが返されること")
+        void findAll_ReturnsEmptyList_WhenNoTasksExist() {
+            when(taskRepository.findAll()).thenReturn(Collections.emptyList());
 
-        // 実際に命令が実行されているかについても検証するために、
-        // 「 taskRepositoryのfindById (1)は、ちゃんと1回呼ばれましたか？」と尋ねている
-        verify(taskRepository, times(1)).findById(1L);
-        verify(taskMapper, times(1)).toTaskUpdateDto(dummyTask);
+            List<Task> actualList = taskService.findAll();
+
+            verify(taskRepository, times(1)).findAll();
+
+            assertThat(actualList).isEmpty();
+            assertThat(actualList).isNotNull();
+        }
+
+        @Test
+        @DisplayName("全取得の際、TaskRepositoryが例外をスローした場合、findAllも同様に例外をスローするか")
+        void findAll_ThrowsException_WhenRepositoryThrowsException() {
+            when(taskRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+            assertThrows(RuntimeException.class, () -> taskService.findAll());
+
+            verify(taskRepository, times(1)).findAll();
+        }
     }
 
-    @Test
-    @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
-    void findById_ThrowsTaskUpdateDtoNotFoundException() {
-        final long NON_EXISTENT_ID = 99L;
+    @Nested
+    @DisplayName("registerNewTaskのテスト")
+    class RegisterNewTaskTests {
+        @Test
+        @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
+        void registerNewTask_Success() {
+            // Arrange
+            TaskInputDto dummyInputDto = new TaskInputDto();
+            dummyInputDto.setTitle("期待するタイトル");
+            dummyInputDto.setDescription("期待する内容");
+            Task dummyTask = new Task();
+            dummyTask.setTitle("期待するタイトル");
+            dummyTask.setDescription("期待する内容");
 
-        when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
+            when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
 
-        // 対象の例外がちゃんとスローするか検証するためのメソッド
-        assertThrows(TaskNotFoundException.class, () -> taskService.findTaskUpdateDtoById(NON_EXISTENT_ID));
-
-        // 例外がスローされるとしても findById は一回呼び出されるので、その点を検証
-        verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);
-
-        // 例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
-        // anyは「引数がどんな値でも成立する」ことを表した記述の仕方
-        verify(taskMapper, never()).toTaskUpdateDto(any());
-    }
-
-    @Test
-    @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
-    void registerNewTask_Success() {
-        // Arrange
-        TaskInputDto dummyInputDto = new TaskInputDto();
-        dummyInputDto.setTitle("期待するタイトル");
-        dummyInputDto.setDescription("期待する内容");
-        Task dummyTask = new Task();
-        dummyTask.setTitle("期待するタイトル");
-        dummyTask.setDescription("期待する内容");
-
-        when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
-
-        // 今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
+            // 今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
 //        doNothing().when(taskRepository).registerNewTask(any(Task.class));
 
-        // Act
-        taskService.registerNewTask(dummyInputDto);
+            // Act
+            taskService.registerNewTask(dummyInputDto);
 
-        // Assert
-        verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
+            // Assert
+            verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);
 
-        // 中身が期待値と一致するか検証するため、 ArgumentCaptor を使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕まえる
-        ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
-        verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
+            // 中身が期待値と一致するか検証するため、 ArgumentCaptor を使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕まえる
+            ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
+            verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
 
-        Task capturedTask = taskArgumentCaptor.getValue();
-        assertThat(capturedTask.getTitle()).isEqualTo("期待するタイトル");
-        assertThat(capturedTask.getDescription()).isEqualTo("期待する内容");
+            Task capturedTask = taskArgumentCaptor.getValue();
+            assertThat(capturedTask.getTitle()).isEqualTo("期待するタイトル");
+            assertThat(capturedTask.getDescription()).isEqualTo("期待する内容");
 
+        }
     }
 
-    @Test
-    @DisplayName("タスクが存在する場合、すべてのタスクが返されること")
-    void findAll_Success() {
-        List<Task> testTaskList = new ArrayList<>();
-        Task testTask1 = new Task();
-        testTask1.setId(1);
-        testTask1.setTitle("test1");
-        testTaskList.add(testTask1);
-        Task testTask2 = new Task();
-        testTask2.setId(2);
-        testTask2.setTitle("test2");
-        testTaskList.add(testTask2);
+    @Nested
+    @DisplayName("findTaskUpdateDtoByIdのテスト")
+    class FindTaskUpdateDtoByIdTests {
+        // テストしたいメソッドごとに付与するアノテーション
+        @Test
+        // テストケースに名前を付けるために付与するアノテーション
+        @DisplayName("IDでタスクが正常に取得できる場合のテスト")
+        void findTaskUpdateDtoById_Success() {
+            // 1. Arrange(準備)
+            // まず、ダミーデータを用意
+            Task dummyTask = new Task();
+            dummyTask.setId(1);
+            dummyTask.setTitle("テストタスク");
 
-        when(taskRepository.findAll()).thenReturn(testTaskList);
+            // 同じくダミーデータ
+            TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
+            dummyUpdateDto.setId(1);
+            dummyUpdateDto.setTitle("テストタスク");
 
-        List<Task> actualList = taskService.findAll();
+            // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
+            // と命令しておく
+            when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
 
-        verify(taskRepository, times(1)).findAll();
+            //上と同じように、命令しておく
+            when(taskMapper.toTaskUpdateDto(dummyTask)).thenReturn(dummyUpdateDto);
 
-        assertThat(actualList.size()).isEqualTo(2);
-        assertThat(actualList).isEqualTo(testTaskList);
+            // 2. Act(実行)
+            // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
+            TaskUpdateDto actualResult = taskService.findTaskUpdateDtoById(1);
+
+            // 3. Assert(検証)
+            assertThat(actualResult.getId()).isEqualTo(1);
+            assertThat(actualResult.getTitle()).isEqualTo("テストタスク");
+
+            // 実際に命令が実行されているかについても検証するために、
+            // 「 taskRepositoryのfindById (1)は、ちゃんと1回呼ばれましたか？」と尋ねている
+            verify(taskRepository, times(1)).findById(1L);
+            verify(taskMapper, times(1)).toTaskUpdateDto(dummyTask);
+        }
+
+        @Test
+        @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
+        void findById_ThrowsTaskUpdateDtoNotFoundException() {
+            final long NON_EXISTENT_ID = 99L;
+
+            when(taskRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
+
+            // 対象の例外がちゃんとスローするか検証するためのメソッド
+            assertThrows(TaskNotFoundException.class, () -> taskService.findTaskUpdateDtoById(NON_EXISTENT_ID));
+
+            // 例外がスローされるとしても findById は一回呼び出されるので、その点を検証
+            verify(taskRepository, times(1)).findById(NON_EXISTENT_ID);
+
+            // 例外がスローされる場合はtoTaskUpdateDtoは呼び出されないので、その点を検証
+            // anyは「引数がどんな値でも成立する」ことを表した記述の仕方
+            verify(taskMapper, never()).toTaskUpdateDto(any());
+        }
     }
 
-    @Test
-    @DisplayName("タスクが存在しない場合、空のリストが返されること")
-    void findAll_ReturnsEmptyList_WhenNoTasksExist() {
-        when(taskRepository.findAll()).thenReturn(Collections.emptyList());
 
-        List<Task> actualList = taskService.findAll();
 
-        verify(taskRepository, times(1)).findAll();
 
-        assertThat(actualList).isEmpty();
-        assertThat(actualList).isNotNull();
-    }
 
-    @Test
-    @DisplayName("全取得の際、TaskRepositoryが例外をスローした場合、findAllも同様に例外をスローするか")
-    void findAll_ThrowsException_WhenRepositoryThrowsException() {
-        when(taskRepository.findAll()).thenThrow(new RuntimeException("Database error"));
-
-        assertThrows(RuntimeException.class, () -> taskService.findAll());
-
-        verify(taskRepository, times(1)).findAll();
-    }
 
 
 
