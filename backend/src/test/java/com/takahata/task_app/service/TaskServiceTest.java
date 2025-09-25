@@ -172,7 +172,7 @@ class TaskServiceTest {
 
         @Test
         @DisplayName("IDでタスクが見つからない場合にTaskNotFoundExceptionをちゃんとスローするかについてのテスト")
-        void findById_ThrowsTaskUpdateDtoNotFoundException() {
+        void updateTask_ThrowsTaskUpdateDtoNotFoundException() {
             final long NON_EXISTENT_ID = 99L;
             TaskUpdateDto taskUpdateDto = new TaskUpdateDto();
             taskUpdateDto.setId(NON_EXISTENT_ID);
