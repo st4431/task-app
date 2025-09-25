@@ -163,5 +163,17 @@ class TaskServiceTest {
         assertThat(actualList).isNotNull();
     }
 
+    @Test
+    @DisplayName("全取得の際、TaskRepositoryが例外をスローした場合、findAllも同様に例外をスローするか")
+    void findAll_ThrowsException_WhenRepositoryThrowsException() {
+        when(taskRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> taskService.findAll());
+
+        verify(taskRepository, times(1)).findAll();
+    }
+
+
+
 
 }
