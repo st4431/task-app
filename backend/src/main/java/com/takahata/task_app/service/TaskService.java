@@ -29,7 +29,7 @@ public class TaskService {
 
     public Task createTask(TaskInputDto newTask) {
         Task task = taskMapper.fromInputDtoToTask(newTask);
-        taskRepository.save(taskMapper.fromInputDtoToTask(newTask));
+        taskRepository.save(task);
         return task;
     }
 
@@ -37,19 +37,10 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
-    // もし中身が空だったら例外を投げておく
-    public TaskUpdateDto findTaskUpdateDtoById(long id) {
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("ID:" + id + "のタスクが見つかりません。"));
-        return taskMapper.toTaskUpdateDto(task);
-    }
-
     public Task updateTask(long id, TaskUpdateDto taskUpdateDto) {
-        // findTaskByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
-        // 時にはDRY原則を破ることもある
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
-        taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
+        task = taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
         taskRepository.save(task);
         return task;
     }

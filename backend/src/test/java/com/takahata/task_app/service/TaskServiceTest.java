@@ -7,7 +7,6 @@ import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.exception.TaskNotFoundException;
 import com.takahata.task_app.repository.TaskRepository;
 import org.junit.jupiter.api.DisplayName;
-imp　ort org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -154,6 +153,7 @@ class TaskServiceTest {
             // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
             // と命令しておく
             when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
+            when(taskMapper.updateTaskFromUpdateDto(dummyTask, dummyUpdateDto)).thenReturn(updatedTask);
 
             // 2. Act(実行)
             // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
