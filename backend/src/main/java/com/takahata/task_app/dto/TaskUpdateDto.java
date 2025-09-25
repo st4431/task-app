@@ -7,8 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class
-TaskUpdateDto {
+public class TaskUpdateDto {
     private long id;
     @NotEmpty
     private String title;
