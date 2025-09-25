@@ -100,7 +100,7 @@ class TaskServiceTest {
     class CreateTaskTests {
         @Test
         @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
-        void registerNewTask_Success() {
+        void createTask_Success() {
             TaskInputDto dummyInputDto = new TaskInputDto();
             dummyInputDto.setTitle("Expected title");
             dummyInputDto.setDescription("Expected description");
