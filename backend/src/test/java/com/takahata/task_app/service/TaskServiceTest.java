@@ -97,27 +97,25 @@ class TaskServiceTest {
 
     @Nested
     @DisplayName("createTaskのテスト")
-    class RegisterNewTaskTests {
+    class CreateTaskTests {
         @Test
         @DisplayName("新規登録のためにregisterNewTaskが機能し、オブジェクトの内容が一致するかのテスト")
         void registerNewTask_Success() {
-            // Arrange
             TaskInputDto dummyInputDto = new TaskInputDto();
             dummyInputDto.setTitle("Expected title");
             dummyInputDto.setDescription("Expected description");
+
             Task dummyTask = new Task();
             dummyTask.setTitle("Expected title");
             dummyTask.setDescription("Expected description");
 
             when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
 
-            // Act
             taskService.createTask(dummyInputDto);
 
-            // Assert
             verify(taskMapper, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).fromInputDtoToTask(dummyInputDto);
 
-            // 中身が期待値と一致するか検証するため、 ArgumentCaptor を使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕まえる
+            // 実現値が期待値と一致するか検証するため、 ArgumentCaptor を使用してRepositoryに渡された実際の引数（Taskオブジェクト）を捕まえる
             ArgumentCaptor<Task> taskArgumentCaptor = ArgumentCaptor.forClass(Task.class);
             verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).save(taskArgumentCaptor.capture());
 
@@ -241,13 +239,4 @@ class TaskServiceTest {
 
         }
     }
-
-
-
-
-
-
-
-
-
 }
