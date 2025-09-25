@@ -11,11 +11,9 @@ imp　ort org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.aggregator.ArgumentsAccessorKt;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
@@ -111,10 +109,10 @@ class TaskServiceTest {
             when(taskMapper.fromInputDtoToTask(dummyInputDto)).thenReturn(dummyTask);
 
             // 今回のテストケースの場合、以下は省略しても大丈夫。理由はAIに聞けば納得する。
-//        doNothing().when(taskRepository).registerNewTask(any(Task.class));
+//        doNothing().when(taskRepository).createTask(any(Task.class));
 
             // Act
-            taskService.registerNewTask(dummyInputDto);
+            taskService.createTask(dummyInputDto);
 
             // Assert
             verify(taskMapper, times(1)).fromInputDtoToTask(dummyInputDto);

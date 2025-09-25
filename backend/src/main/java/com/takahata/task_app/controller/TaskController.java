@@ -37,7 +37,7 @@ public class TaskController {
         if (result.hasErrors()) {
             return "input-task";
         }
-        taskService.registerNewTask(newTask);
+        taskService.createTask(newTask);
         return "redirect:/tasks"; // 登録後はタスク一覧画面にリダイレクトします
     }
 

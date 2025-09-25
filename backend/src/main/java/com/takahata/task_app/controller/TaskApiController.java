@@ -9,9 +9,6 @@ import com.takahata.task_app.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +22,7 @@ public class TaskApiController {
     private final TaskMapper taskMapper;
 
     @GetMapping
-    public ResponseEntity<List<TaskResponseDto>> findAllTasks() {
+    public ResponseEntity<List<TaskResponseDto>> findAll() {
         List<Task> taskList = taskService.findAll();
         List<TaskResponseDto> taskResponseDtoList = taskList.stream()
                 .map(taskMapper::toTaskResponseDto)
@@ -34,10 +31,11 @@ public class TaskApiController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     //@RequestBodyはリクエストの本文に書かれるJSONデータをTaskInputDtoオブジェクトに変換する
-    public void registerNewTask(@Validated @RequestBody TaskInputDto taskInputDto) {
-        taskService.registerNewTask(taskInputDto);
+    public ResponseEntity<TaskResponseDto> createTask(@Validated @RequestBody TaskInputDto taskInputDto) {
+        Task task = taskService.createTask(taskInputDto);
+        TaskResponseDto taskResponseDto = taskMapper.toTaskResponseDto(task);
+        return ResponseEntity.ok(taskResponseDto);
     }
 
     @DeleteMapping("/{id}")

@@ -27,8 +27,10 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public void registerNewTask(TaskInputDto newTask) {
+    public Task createTask(TaskInputDto newTask) {
+        Task task = taskMapper.fromInputDtoToTask(newTask);
         taskRepository.save(taskMapper.fromInputDtoToTask(newTask));
+        return task;
     }
 
     public void deleteTask(long id) {
