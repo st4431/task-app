@@ -137,29 +137,30 @@ class TaskServiceTest {
         void updateTask_Success() {
             // 1. Arrange(準備)
             // まず、ダミーデータを用意
+            final long DUMMY_ID = 1L;
             Task dummyTask = new Task();
-            dummyTask.setId(1);
+            dummyTask.setId(DUMMY_ID);
             dummyTask.setTitle("更新前");
 
             // 同じくダミーデータ
             TaskUpdateDto dummyUpdateDto = new TaskUpdateDto();
-            dummyUpdateDto.setId(1);
+            dummyUpdateDto.setId(DUMMY_ID);
             dummyUpdateDto.setTitle("更新後");
 
             Task updatedTask = new Task();
-            updatedTask.setId(1);
+            updatedTask.setId(DUMMY_ID);
             updatedTask.setTitle("更新後");
 
             // 「 taskRepositoryのfindById(1) が呼ばれたら、dummyTaskをOptionalでラップして返してください。」
             // と命令しておく
-            when(taskRepository.findById(1L)).thenReturn(Optional.of(dummyTask));
+            when(taskRepository.findById(DUMMY_ID)).thenReturn(Optional.of(dummyTask));
             when(taskMapper.updateTaskFromUpdateDto(dummyTask, dummyUpdateDto)).thenReturn(updatedTask);
 
             // 2. Act(実行)
             // ここで、上で命令したことが実行され、それによって得られた値が期待値と一致するかこの後で検証する
-            taskService.updateTask(1L, dummyUpdateDto);
+            taskService.updateTask(DUMMY_ID, dummyUpdateDto);
 
-            verify(taskRepository, times(1)).findById(1L);
+            verify(taskRepository, times(1)).findById(DUMMY_ID);
             verify(taskMapper, times(1)).updateTaskFromUpdateDto(dummyTask, dummyUpdateDto);
 
             ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
@@ -189,6 +190,41 @@ class TaskServiceTest {
             // anyは「引数がどんな値でも成立する」ことを表した記述の仕方
             verify(taskMapper, never()).toTaskUpdateDto(any());
             verify(taskRepository, never()).save(any(Task.class));
+        }
+
+        @Test
+        @DisplayName("一部のフィールドだけが更新され、他がnullだった場合")
+        void updateTask_ShouldUpdateFieldsToNull_WhenDtoFieldsAreNull() {
+            final long DUMMY_ID = 1L;
+            Task task = new Task();
+            task.setId(DUMMY_ID);
+            task.setTitle("更新前のタイトル");
+            task.setDescription("更新前の説明");
+
+            TaskUpdateDto taskUpdateDto = new TaskUpdateDto();
+            taskUpdateDto.setId(DUMMY_ID);
+            taskUpdateDto.setTitle("更新後のタイトル");
+            taskUpdateDto.setDescription(null);
+
+            Task updatedTask = new Task();
+            updatedTask.setId(DUMMY_ID);
+            updatedTask.setTitle("更新後のタイトル");
+            updatedTask.setDescription(null);
+
+            when(taskRepository.findById(DUMMY_ID)).thenReturn(Optional.of(task));
+            when(taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto)).thenReturn(updatedTask);
+
+            taskService.updateTask(DUMMY_ID, taskUpdateDto);
+
+
+            ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
+            verify(taskRepository, times(1)).save(argumentCaptor.capture());
+
+            Task capturedTask = argumentCaptor.getValue();
+            assertThat(capturedTask.getId()).isEqualTo(updatedTask.getId());
+            assertThat(capturedTask.getTitle()).isEqualTo(updatedTask.getTitle());
+            assertThat(capturedTask.getDescription()).isEqualTo(updatedTask.getDescription());
+
         }
     }
 
