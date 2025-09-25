@@ -1,5 +1,6 @@
 package com.takahata.task_app.service;
 
+import com.takahata.task_app.dto.TaskResponseDto;
 import com.takahata.task_app.mapper.TaskMapper;
 import com.takahata.task_app.dto.TaskInputDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
@@ -41,13 +42,14 @@ public class TaskService {
         return taskMapper.toTaskUpdateDto(task);
     }
 
-    public void updateTask(TaskUpdateDto taskUpdateDto) {
+    public TaskResponseDto updateTask(TaskUpdateDto taskUpdateDto) {
         // findTaskByIdで一度呼び出しているが、今後「作成時間が-ヶ月前の場合は-する」と言ったような条件分岐を実装することを考慮し、あえて2回呼び出す。
         // 時にはDRY原則を破ることもある
         Task task = taskRepository.findById(taskUpdateDto.getId())
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
         taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
         taskRepository.save(task);
+
     }
 
     // Stream APIを習得するための練習

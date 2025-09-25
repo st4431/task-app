@@ -1,6 +1,7 @@
 package com.takahata.task_app.mapper;
 
 import com.takahata.task_app.dto.TaskInputDto;
+import com.takahata.task_app.dto.TaskResponseDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
 import com.takahata.task_app.entity.TaskStatus;
@@ -61,4 +62,13 @@ public class TaskMapper {
         return taskUpdateDto;
     }
 
+    public TaskResponseDto toTaskResponseDto(Task task) {
+        TaskResponseDto taskResponseDto = new TaskResponseDto();
+        taskResponseDto.setId(task.getId());
+        taskResponseDto.setTitle(task.getTitle());
+        taskResponseDto.setDescription(task.getDescription());
+        taskResponseDto.setTaskStatus(task.getTaskStatus().name());
+        taskResponseDto.setDueDate(task.getDueDate().toString());
+        return taskResponseDto;
+    }
 }
