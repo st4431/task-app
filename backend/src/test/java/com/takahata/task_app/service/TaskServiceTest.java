@@ -134,8 +134,11 @@ class TaskServiceTest {
         @Test
         @DisplayName("正常にタスクを削除できる場合")
         void deleteTask_Success() {
+            doNothing().when(taskRepository).deleteById(anyLong());
 
+            taskService.deleteTask(FIRST_DUMMY_ID);
 
+            verify(taskRepository, times(ONE_INTERACTIONS_WITH_THIS_MOCK)).deleteById(FIRST_DUMMY_ID);
         }
 
     }
