@@ -14,6 +14,4 @@ public class UserMapper {
         registerResponseDto.setRole(user.getRole().name());
         return registerResponseDto;
     }
-
-
 }

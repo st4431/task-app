@@ -49,7 +49,7 @@ public class TaskService {
                 .orElseThrow(() -> new TaskNotFoundException("ID:" + taskUpdateDto.getId() + "のタスクが見つかりません。"));
         taskMapper.updateTaskFromUpdateDto(task, taskUpdateDto);
         taskRepository.save(task);
-
+        return taskMapper.toTaskResponseDto(task);
     }
 
     // Stream APIを習得するための練習
