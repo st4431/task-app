@@ -14,9 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -151,5 +149,19 @@ class TaskServiceTest {
         assertThat(actualList.size()).isEqualTo(2);
         assertThat(actualList).isEqualTo(testTaskList);
     }
+
+    @Test
+    @DisplayName("タスクが存在しない場合、空のリストが返されること")
+    void findAll_ReturnsEmptyList_WhenNoTasksExist() {
+        when(taskRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<Task> actualList = taskService.findAll();
+
+        verify(taskRepository, times(1)).findAll();
+
+        assertThat(actualList).isEmpty();
+        assertThat(actualList).isNotNull();
+    }
+
 
 }
