@@ -1,11 +1,14 @@
 package com.takahata.task_app.controller;
 
 import com.takahata.task_app.dto.TaskInputDto;
+import com.takahata.task_app.dto.TaskResponseDto;
 import com.takahata.task_app.dto.TaskUpdateDto;
 import com.takahata.task_app.entity.Task;
+import com.takahata.task_app.mapper.TaskMapper;
 import com.takahata.task_app.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,10 +22,15 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 public class TaskApiController {
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
     @GetMapping
-    public List<Task> findAllTasks() {
-        return taskService.findAll();
+    public ResponseEntity<List<TaskResponseDto>> findAllTasks() {
+        List<Task> taskList = taskService.findAll();
+        List<TaskResponseDto> taskResponseDtoList = taskList.stream()
+                .map(taskMapper::toTaskResponseDto)
+                .toList();
+        return ResponseEntity.ok(taskResponseDtoList);
     }
 
     @PostMapping
