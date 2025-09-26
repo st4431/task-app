@@ -30,6 +30,11 @@ spring:
     # この設定により、既に実行されたsql文は、Flywayが「適用済み」と認識し、実行をスキップする
     baseline-on-migrate: true
 
+# --- JWT Settings ---
+jwt:
+  secret: ${JWT_SECRET}
+  expirationMs: 86400000 # 24時間 (ミリ秒)
+
 ---
 # ===============================
 # "local" プロファイルが有効な時の設定
