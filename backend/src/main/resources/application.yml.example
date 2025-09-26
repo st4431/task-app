@@ -45,9 +45,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url:
-    username:
-    password: ${LOCAL_DB_PASSWORD}
+    url: jdbc:postgresql://db:5432/taskapp
+    username: user
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       # validate にすることでアプリケーションの起動時にHibernateがJavaのエンティティクラスと
@@ -65,8 +65,8 @@ spring:
       on-profile: production
 
   datasource:
-    url:
-    username:
+    url: ${PROD_DB_URL}
+    username: ${PROD_DB_USERNAME}
     password: ${PROD_DB_PASSWORD}
 
   # 本番環境では、セキュリティのため公開するActuatorエンドポイントを制限する
