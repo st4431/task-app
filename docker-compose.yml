@@ -6,8 +6,7 @@ services:
     image: postgres:14-alpine
     container_name: task-app-db
     environment:
-      POSTGRES_USER: user
-      # パスワードを直接書く代わりに、.envファイルからDB_PASSWORD変数を読み込ます
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: taskapp
     ports:
@@ -30,13 +29,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-
+      JWT_SECRET: ${JWT_SECRET}
       # コンテナ内からdbコンテナへ接続するための設定
-      SPRING_PROFILES_ACTIVE=local
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskapp
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD:
-      JWT_SECRET=${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
     # dbコンテナが起動してからbackendを起動するように依存関係を設定
     depends_on:
       - db
