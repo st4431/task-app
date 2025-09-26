@@ -45,9 +45,9 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:postgresql://db:5432/taskapp
-    username: user
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/taskapp_db
+    username: st
+    password: ${LOCAL_DB_PASSWORD}
   jpa:
     hibernate:
       # validate にすることでアプリケーションの起動時にHibernateがJavaのエンティティクラスと
