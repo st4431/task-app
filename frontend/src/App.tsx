@@ -42,8 +42,9 @@ function App() {
         title: title,
         taskStatus: 'NOT_STARTED'
       };
-      await axios.post('http://localhost:8080/api/tasks', newTodo);
-      fetchTasks();
+      const response = await axios.post('http://localhost:8080/api/tasks', newTodo);
+      const newTaskWithId = response.data;
+      setTodos(prevTodos => [...prevTodos, newTaskWithId]);
     } catch (error) {
       console.error("タスクの登録に失敗しました：", error);
     }
