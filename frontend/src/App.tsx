@@ -26,10 +26,11 @@ function App() {
       }
   };
 
-  // よくわからんけどuseEffectがなければ以下の処理が無限ループされる
-  // これを防ぐためにuseEffectを使用する
-  // useEffectは、「画面が描画されるタイミング」で使用する
-  // よってポストなどは必要ない
+  // 「Reactはstateが変化したら再描画する」ため、ここで useEffect なしで
+  // fetchTasksを実行すると、 setTodosが呼び出されて、state が変化し、
+  // それにより再描画され、再び fetchTasks が呼び出されて、無限ループになる
+  // useEffect はそれを防ぐために使用されるものであり、
+  // 依存配列を空にすることで、コンポーネントの初回マウント時のみ実行される
   useEffect(() => {
     // 上で定義した関数をここで実行している
     fetchTasks();
@@ -48,12 +49,23 @@ function App() {
     }
   };
 
+
+  // 楽観的UIにロールバック処理を追加
+  // 逆に、API通信が成功してからフロント上での削除を行うことで、確実性を優先する方法もあるが、
+  // 今回はUIの反応をできるだけ速めることを優先し、楽観的UIを選択
   const deleteTask = async (id: number) => {
+    // 元のtodosを避難させておく
+    const originalTodos = [...todos];
+    // ここで再度fetchTasksを呼び出して最新の状態に更新するとなると、
+    // データ件数が多くなってきたときに、パフォーマンスが悪化する可能性がある
+    // その場合は、setTodosを使用してローカルの状態を更新する方法もある
+    const newTodos = todos.filter(todo => todo.id !== id);
+    setTodos(newTodos);
     try {
-      await axios.delete(`http://localhost:8080/api/tasks/${id}`) ;
-      fetchTasks();
+      await axios.delete(`http://localhost:8080/api/tasks/${id}`);
     } catch (error) {
       console.error("タスクの削除に失敗しました：", error);
+      setTodos(originalTodos);
     }
   }
 
