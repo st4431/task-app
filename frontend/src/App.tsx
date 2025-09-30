@@ -71,16 +71,26 @@ function App() {
   }
 
   const updateTaskStatus = async (todo: Todo) => {
-    try {
-      const updatedTodo = {
+    const originalTodos = [...todos];
+    const updatedTodo: Todo = {
         id: todo.id,
         title: todo.title,
         taskStatus: todo.taskStatus === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED'
-      }
+    }
+    // Arrays.map は、新しい配列を作成するメソッドであり、
+    // return される値がそのループで新たな配列に格納される要素を表す
+    const newTodos = todos.map((prevTodo) => {
+      if (prevTodo.id === updatedTodo.id) {
+        return updatedTodo;
+      } 
+      return prevTodo;
+    });
+    setTodos(newTodos);
+    try {
       await axios.put('http://localhost:8080/api/tasks', updatedTodo);
-      fetchTasks();
     } catch (error) {
       console.error("タスクの更新に失敗しました：", error);
+      setTodos(originalTodos);
     }
   }
 
