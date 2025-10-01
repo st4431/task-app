@@ -1,4 +1,4 @@
-import type { Todo } from '../App';
+import type { Todo } from '../hooks/useTodos';
 import './TodoList.css';
 
 interface TodoListProps {
